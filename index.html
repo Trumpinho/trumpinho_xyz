@@ -75,7 +75,7 @@
 
     <div class="main-stage">
         <div class="banner-container">
-            <img src="assets/banner_cropped.png" class="banner">
+            <img src="banner_cropped.png" class="banner">
         </div>
 
         <div style="position: relative; display: inline-flex; justify-content: center; align-items: center;">
@@ -85,10 +85,10 @@
                  onmouseout="document.getElementById('main-title').innerText='$TRUMPINHO';">
                 <div class="flip-inner">
                     <div class="flip-front">
-                        <img src="assets/sprites/idle.png" class="main-img">
+                        <img src="idle.png" class="main-img">
                     </div>
                     <div class="flip-back">
-                        <img src="assets/trumpinho_trophy.jpg" class="main-img">
+                        <img src="trumpinho_trophy.jpg" class="main-img">
                     </div>
                 </div>
             </div>
@@ -137,7 +137,7 @@
         const container = document.getElementById('particles');
         for(let i=0; i<8; i++) {
             let p = document.createElement('img');
-            p.src = 'assets/falling_trophy_transparent.png';
+            p.src = 'falling_trophy_transparent.png';
             p.className = 'particle';
             p.style.left = Math.random() * 100 + 'vw';
             p.style.animationDuration = (Math.random() * 8 + 10) + 's';
