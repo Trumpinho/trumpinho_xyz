@@ -3,77 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Make Football Great Again</title>
+    <title>$TRUMPINHO - Make Football Great Again</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        * { box-sizing: border-box; }
+        body { background: radial-gradient(circle at top, #4b6f93 0%, #1d3557 100%); background-attachment: fixed; min-height: 100vh; color: #fff; font-family: 'Press Start 2P', monospace; text-align: center; margin: 0; overflow-x: hidden; padding-bottom: 60px; position: relative; }
         
-        body {
-            margin: 0;
-            padding: 0;
-            background: radial-gradient(circle at center, #1d3557 0%, #0b1a2e 100%);
-            color: #fff;
-            font-family: 'Press Start 2P', monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            text-align: center;
-            overflow: hidden;
-        }
+        .main-stage { padding: 120px 20px 40px 20px; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 2;}
+        
+        /* Banner resizing */
+        .banner-container { width: 100%; max-width: 1000px; margin: 0 auto 40px auto; display: flex; justify-content: center; padding: 0 10px; box-sizing: border-box;}
+        .banner { max-width: 100%; height: auto; object-fit: contain; }
+        
+        /* 3D Flip Card Effect */
+        .main-character-container { position: relative; margin: 20px 0; display: inline-block; cursor: pointer; perspective: 1000px; width: 350px; height: 350px; z-index: 10;}
+        .flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.8s; transform-style: preserve-3d; }
+        .main-character-container:hover .flip-inner { transform: rotateY(180deg); }
+        .flip-front, .flip-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border: 4px solid #ffcc00; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; background: #1d3557; }
+        .flip-back { transform: rotateY(180deg); }
+        
+        .main-img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; display: block; }
+        
+        .glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 300px; background: #ffcc00; filter: blur(60px); opacity: 0.6; z-index: 0; animation: pulse 2s infinite alternate; pointer-events: none;}
+        @keyframes pulse { 0% { opacity: 0.4; } 100% { opacity: 0.8; } }
+        
+        /* Fixed height for text section to prevent jumping */
+        .token-info { margin-top: 20px; transition: 0.3s; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;}
+        .token-name { font-size: 40px; color: #ffcc00; text-shadow: 4px 4px #000; margin: 0 0 10px 0; transition: 0.3s;}
+        .token-ca { font-size: 16px; color: #fff; background: rgba(0,0,0,0.5); padding: 12px 24px; border: 2px dashed #fff; word-break: break-all; transition: opacity 0.3s; opacity: 1; margin: 0;}
+        
+        /* When hovering the container, change text */
+        .main-character-container:hover ~ .token-info .token-name { content: "THE ONLY GOAT"; color: #fff; }
+        .main-character-container:hover ~ .token-info .token-ca { opacity: 0; pointer-events: none; }
 
-        .container {
-            border: 4px solid #ffcc00;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            max-width: 800px;
-            width: 90%;
-        }
+        /* Widget Row */
+        .nav-links { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 30px; }
+        .nav-links a { color: #000; text-decoration: none; font-size: 18px; border: 4px solid #000; padding: 15px 25px; border-radius: 8px; transition: 0.2s; background: #ffcc00; box-shadow: 6px 6px 0 #000; font-weight: bold; text-shadow: none; }
+        .nav-links a:hover { background: #e63946; color: #fff; transform: translate(4px, 4px); box-shadow: 2px 2px 0 #000; }
+        .widget-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 1400px; margin: 0 auto; padding: 20px; position: relative; z-index: 2;}
+        .widget { background: rgba(29, 53, 87, 0.9); border: 4px solid #ffcc00; padding: 20px; width: 320px; text-align: left; border-radius: 10px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+        .widget h3 { color: #e63946; font-size: 16px; margin-bottom: 15px; text-shadow: 2px 2px #000; }
 
-        h1 {
-            color: #e63946;
-            font-size: 32px;
-            text-shadow: 3px 3px 0px #fff;
-            line-height: 1.5;
-            margin-bottom: 40px;
-            text-transform: uppercase;
-        }
+        /* Particle System */
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: hidden; }
+        .particle { position: absolute; width: 68px; height: auto; image-rendering: pixelated; animation: fall linear infinite; }
+        @keyframes fall { 0% { transform: translateY(-100px) rotate(0deg); opacity: 0.8; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
 
-        p {
-            font-size: 20px;
-            color: #ffcc00;
-            line-height: 1.8;
-            text-shadow: 2px 2px 0px #000;
-        }
-
-        .emoji {
-            width: 160px;
-            display: block;
-            margin: 30px auto 0 auto;
-            animation: bounce 2s infinite;
-            image-rendering: pixelated;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-20px); }
-            60% { transform: translateY(-10px); }
-        }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            h1 { font-size: 20px; }
-            p { font-size: 14px; }
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .token-name { font-size: 24px; }
+            .token-ca { font-size: 10px; padding: 8px 12px; }
+            .main-character-container { width: 250px; height: 250px; }
+            .widget { width: 100%; max-width: 100%; }
+            .nav-links { flex-direction: column; padding: 0 20px; }
+            .nav-links a { font-size: 14px; text-align: center; }
+            .main-stage { padding: 100px 10px 40px 10px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Make Football Great Again</h1>
-        <p>Something is cooking...</p>
-        <img src="trump_shush.png" alt="Trumpinho Shush" class="emoji">
+    <!-- Fake News Ticker -->
+    <div style="background: #e63946; color: #fff; padding: 12px 10px; font-size: 10px; font-weight: bold; border-bottom: 4px solid #000; font-family: 'Press Start 2P', monospace; display: flex; align-items: center; position: fixed; top: 0; width: 100%; z-index: 101;">
+        <span style="background: #ffcc00; color: #000; padding: 6px 16px; z-index: 10; border: 3px solid #000; border-radius: 6px; box-shadow: 3px 3px 0 #000; font-weight: bold; margin-right: 15px; letter-spacing: 1px;">NO FAKE NEWS:</span>
+        <marquee scrollamount="5" style="padding-top: 4px;">
+            "Sleepy Joe claims he can play 90 minutes. FALSE." • "Macron asks referee for a timeout to fix his hair. SAD." • "Brazil spotted practicing dives instead of penalties." • "VAR is a witch hunt against me and the best country in the world, United States of America." • "Crooked Hillary spotted trying to delete referee emails. UNBELIEVABLE." • "Corrupt FIFA president Infantino begged me for soccer lessons. Very needy." • "Fake news claims Trumpinho cannot score from 50 yards. I scored three times in five seconds, believe me."
+        </marquee>
     </div>
+
+    <div class="particles" id="particles"></div>
+
+    <div class="main-stage">
+        <div class="banner-container">
+            <img src="assets/banner_cropped.png" class="banner">
+        </div>
+
+        <div style="position: relative; display: inline-flex; justify-content: center; align-items: center;">
+            <div class="glow"></div>
+            <div class="main-character-container"
+                 onmouseover="document.getElementById('main-title').innerText='THE ONLY GOAT';" 
+                 onmouseout="document.getElementById('main-title').innerText='$TRUMPINHO';">
+                <div class="flip-inner">
+                    <div class="flip-front">
+                        <img src="assets/sprites/idle.png" class="main-img">
+                    </div>
+                    <div class="flip-back">
+                        <img src="assets/trumpinho_trophy.jpg" class="main-img">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="token-info">
+            <h1 class="token-name" id="main-title">$TRUMPINHO</h1>
+            <div class="token-ca" id="ca-box">CA: TRUMP...[PLACEHOLDER_CONTRACT_ADDRESS]...PUMP</div>
+        </div>
+        
+        <div class="nav-links" style="margin-top: 30px;">
+            <a href="https://x.com/trumpinho_xyz" target="_blank">TWITTER</a>
+        </div>
+
+        <!-- The Updated Roadmap -->
+        <div id="roadmap" class="widget" style="width: 100%; max-width: 900px; grid-column: 1 / -1; margin: 40px auto 20px auto; border-color: #e63946; text-align: left;">
+            <h3 style="color: #e63946; text-align: center; font-size: 24px;">ROADMAP: THE TACTICS BOARD</h3>
+            <div style="font-size: 16px; line-height: 2.5; color: #fff; margin-bottom: 25px; text-align: center; text-shadow: 2px 2px #000;">
+                <div><span style="color: #ffcc00;">PHASE 1:</span> Launch $TRUMPINHO & Fire the SEC Referees</div>
+                <div><span style="color: #ffcc00;">PHASE 2:</span> DexScreener Trending & Win the Group Stage</div>
+                <div><span style="color: #ffcc00;">PHASE 3:</span> 100M Market Cap & The World Cup Victory</div>
+            </div>
+            <div style="background: #000; padding: 25px; border: 2px dashed #ffcc00; text-align: center; border-radius: 8px;">
+                <p style="font-size: 16px; color: #ffcc00; margin: 0; line-height: 1.8;">
+                    "Listen, $TRUMPINHO is already the winner, nobody can compete with me. Just hope you are early, because beautiful, tremendous gains are going to happen here. Believe me, we are making football great again."
+                </p>
+            </div>
+        </div>
+
+        <!-- Big Yellow Teaser Text under Roadmap -->
+        <div style="width: 100%; max-width: 900px; text-align: center; margin: 30px auto 10px auto; padding: 10px; z-index: 2; position: relative;">
+            <p style="font-size: 18px; color: #ffcc00; line-height: 2.0; margin: 0; text-shadow: 3px 3px 0px #000; font-weight: bold;">
+                "Much more content and activities are coming. I hope you did not think this is all that Trumpinho can do. This is just a beginning, you doubters."
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="background: #0b1a2e; padding: 30px 20px; text-align: center; color: #4b6f93; font-size: 10px; line-height: 2.0; border-top: 4px solid #1d3557; margin-top: 20px; position: relative; z-index: 2;">
+        <p style="margin: 0; color: #fff;">© 2026 TRUMPINHO. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Particle System
+        const container = document.getElementById('particles');
+        for(let i=0; i<8; i++) {
+            let p = document.createElement('img');
+            p.src = 'assets/falling_trophy_transparent.png';
+            p.className = 'particle';
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.animationDuration = (Math.random() * 8 + 10) + 's';
+            p.style.animationDelay = Math.random() * 5 + 's';
+            container.appendChild(p);
+        }
+    </script>
 </body>
 </html>
