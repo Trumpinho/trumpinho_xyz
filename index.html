@@ -50,6 +50,9 @@
         .particle { position: absolute; width: 68px; height: auto; image-rendering: pixelated; animation: fall linear infinite; }
         @keyframes fall { 0% { transform: translateY(-100px) rotate(0deg); opacity: 0.8; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
 
+        .fake-news-ticker { background: #e63946; color: #fff; padding: 12px 10px; font-size: 10px; font-weight: bold; border-bottom: 4px solid #000; font-family: 'Press Start 2P', monospace; display: flex; align-items: center; position: fixed; top: 0; width: 100%; z-index: 101; }
+        .ticker-badge { background: #ffcc00; color: #000; padding: 6px 16px; z-index: 10; border: 3px solid #000; border-radius: 6px; box-shadow: 3px 3px 0 #000; font-weight: bold; margin-right: 15px; letter-spacing: 1px; flex-shrink: 0; }
+
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
             .token-name { font-size: 24px; }
@@ -59,13 +62,27 @@
             .nav-links { flex-direction: column; padding: 0 20px; }
             .nav-links a { font-size: 14px; text-align: center; }
             .main-stage { padding: 100px 10px 40px 10px; }
+            .fake-news-ticker { padding: 8px 5px; font-size: 8px; }
+            .ticker-badge { padding: 4px 8px; border: 2px solid #000; box-shadow: 2px 2px 0 #000; margin-right: 8px; font-size: 8px; }
         }
     </style>
+    <script>
+        function imgError(image) {
+            const filename = image.src.substring(image.src.lastIndexOf('/') + 1);
+            if (filename === 'idle.png') {
+                image.src = 'assets/sprites/idle.png';
+            } else if (filename === 'trumpinho_trophy.jpg') {
+                image.src = 'assets/trumpinho_trophy.jpg';
+            } else if (filename === 'banner_cropped.png') {
+                image.src = 'assets/banner_cropped.png';
+            }
+        }
+    </script>
 </head>
 <body>
     <!-- Fake News Ticker -->
-    <div style="background: #e63946; color: #fff; padding: 12px 10px; font-size: 10px; font-weight: bold; border-bottom: 4px solid #000; font-family: 'Press Start 2P', monospace; display: flex; align-items: center; position: fixed; top: 0; width: 100%; z-index: 101;">
-        <span style="background: #ffcc00; color: #000; padding: 6px 16px; z-index: 10; border: 3px solid #000; border-radius: 6px; box-shadow: 3px 3px 0 #000; font-weight: bold; margin-right: 15px; letter-spacing: 1px;">NO FAKE NEWS:</span>
+    <div class="fake-news-ticker">
+        <span class="ticker-badge">NO FAKE NEWS:</span>
         <marquee scrollamount="5" style="padding-top: 4px;">
             "Sleepy Joe claims he can play 90 minutes. FALSE." • "Macron asks referee for a timeout to fix his hair. SAD." • "Brazil spotted practicing dives instead of penalties." • "VAR is a witch hunt against me and the best country in the world, United States of America." • "Crooked Hillary spotted trying to delete referee emails. UNBELIEVABLE." • "Corrupt FIFA president Infantino begged me for soccer lessons. Very needy." • "Fake news claims Trumpinho cannot score from 50 yards. I scored three times in five seconds, believe me."
         </marquee>
@@ -75,7 +92,7 @@
 
     <div class="main-stage">
         <div class="banner-container">
-            <img src="banner_cropped.png" class="banner">
+            <img src="banner_cropped.png" class="banner" onerror="imgError(this)">
         </div>
 
         <div style="position: relative; display: inline-flex; justify-content: center; align-items: center;">
@@ -85,10 +102,10 @@
                  onmouseout="document.getElementById('main-title').innerText='$TRUMPINHO';">
                 <div class="flip-inner">
                     <div class="flip-front">
-                        <img src="idle.png" class="main-img">
+                        <img src="idle.png" class="main-img" onerror="imgError(this)">
                     </div>
                     <div class="flip-back">
-                        <img src="trumpinho_trophy.jpg" class="main-img">
+                        <img src="trumpinho_trophy.jpg" class="main-img" onerror="imgError(this)">
                     </div>
                 </div>
             </div>
@@ -96,7 +113,7 @@
         
         <div class="token-info">
             <h1 class="token-name" id="main-title">$TRUMPINHO</h1>
-            <div class="token-ca" id="ca-box">CA: TRUMP...[PLACEHOLDER_CONTRACT_ADDRESS]...PUMP</div>
+            <div class="token-ca" id="ca-box">CA: TRUMP...COMING SOON...PUMP</div>
         </div>
         
         <div class="nav-links" style="margin-top: 30px;">
@@ -138,6 +155,9 @@
         for(let i=0; i<8; i++) {
             let p = document.createElement('img');
             p.src = 'falling_trophy_transparent.png';
+            p.onerror = function() {
+                this.src = 'assets/falling_trophy_transparent.png';
+            };
             p.className = 'particle';
             p.style.left = Math.random() * 100 + 'vw';
             p.style.animationDuration = (Math.random() * 8 + 10) + 's';
