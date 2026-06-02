@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Penalty Shootout</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        body { margin: 0; padding: 0; overflow: hidden; background: #2b7a0b; font-family: 'Press Start 2P', monospace; color: white; user-select: none; }
+        canvas { display: block; width: 100vw; height: 100vh; }
+        #ui { position: absolute; top: 10px; left: 10px; pointer-events: none; font-size: 16px; text-shadow: 2px 2px 0 #000; line-height: 1.5; z-index: 10;}
+        #message { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 16px; text-align: center; pointer-events: auto; text-shadow: 3px 3px 0 #000; background: rgba(0,0,0,0.8); padding: 30px; border: 4px solid #fff; border-radius: 10px; z-index: 20; max-width: 80%; line-height: 1.6;}
+
+        #portrait-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at center, #1d3557 0%, #0d1b2a 100%);
+            color: #ffcc00;
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Press Start 2P', monospace;
+            text-align: center;
+            box-sizing: border-box;
+            padding: 30px;
+        }
+        #portrait-overlay .phone-rotate-icon {
+            font-size: 60px;
+            margin-bottom: 25px;
+            animation: rotatePhoneVertical 2s infinite ease-in-out;
+        }
+        #portrait-overlay .rotate-title {
+            font-size: 14px;
+            line-height: 1.8;
+            text-shadow: 2px 2px 0 #000;
+            margin-bottom: 15px;
+        }
+        #portrait-overlay .rotate-sub {
+            font-size: 9px;
+            color: #fff;
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+        @keyframes rotatePhoneVertical {
+            0% { transform: rotate(-90deg); }
+            50% { transform: rotate(0deg); }
+            100% { transform: rotate(-90deg); }
+        }
+        @media (max-width: 768px) {
+            #ui { font-size: 10px; top: 8px; left: 8px; }
+            #message { font-size: 11px; padding: 15px; border-width: 2px; }
+            #msg-text { font-size: 11px; }
+            #share-btn { font-size: 9px; padding: 8px 16px; }
+            #bibi-options button { font-size: 9px; padding: 6px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="portrait-overlay">
+        <div class="phone-rotate-icon">📱</div>
+        <div class="rotate-title">PLEASE ROTATE YOUR DEVICE VERTICALLY</div>
+        <div class="rotate-sub">This game is best played in portrait mode</div>
+        <button id="dismiss-overlay-btn" onclick="dismissOverlay()" style="margin-top: 25px; background: #ffcc00; border: 3px solid #000; color: #000; font-family: inherit; font-size: 10px; cursor: pointer; padding: 12px 24px; border-radius: 6px; box-shadow: 4px 4px 0 #000; font-weight: bold;">PLAY ANYWAY</button>
+    </div>
+    <div id="ui">SCORE: <span id="score">0</span> | SHOTS LEFT: <span id="attempts">5</span></div>
+    <div id="message">
+        <div id="msg-text">CLICK TO START</div>
+        <div id="bibi-options" style="display: none; margin-top: 20px; gap: 10px; justify-content: center; flex-direction: column;">
+            <button id="bibi-btn-1" onclick="window.location.href='game_penalty.html?opponent=random'" style="background: #222; border: 2px solid #4b6f93; color: #ffcc00; font-family: inherit; font-size: 12px; cursor: pointer; padding: 10px;"></button>
+            <button id="bibi-btn-2" onclick="continueBibi()" style="background: #e63946; border: 2px solid #fff; color: #fff; font-family: inherit; font-size: 12px; cursor: pointer; padding: 10px;"></button>
+        </div>
+        <div id="share-container" style="display: none; margin-top: 20px; justify-content: center; align-items: center;">
+            <button id="share-btn" onclick="shareOnX()" style="background: #000; border: 3px solid #ffcc00; color: #ffcc00; font-family: inherit; font-size: 13px; cursor: pointer; padding: 12px 24px; border-radius: 6px; text-shadow: 2px 2px 0 #000; box-shadow: 0 6px 12px rgba(0,0,0,0.8); font-weight: bold; transition: transform 0.1s;">
+                SHARE THIS HUGE WIN ON X!
+            </button>
+        </div>
+        <div id="msg-footer" style="display: none; margin-top: 20px; font-size: 10px; color: #888;">Select oponent to play again</div>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        let overlayDismissed = false;
+
+        function dismissOverlay() {
+            overlayDismissed = true;
+            const overlay = document.getElementById('portrait-overlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+        }
+
+        function checkOrientation() {
+            const overlay = document.getElementById('portrait-overlay');
+            if (!overlay) return;
+            
+            // Only show on mobile devices (where physical screen height > width)
+            const isMobileDevice = screen.height > screen.width;
+            
+            if (isMobileDevice) {
+                // If held in landscape (width > height) and not dismissed yet
+                if (window.innerWidth > window.innerHeight && !overlayDismissed) {
+                    overlay.style.display = 'flex';
+                } else {
+                    overlay.style.display = 'none';
+                }
+            } else {
+                // Desktop PC - never show the overlay
+                overlay.style.display = 'none';
+            }
+        }
+
+        // URL Parameter Parsing
+        const urlParams = new URLSearchParams(window.location.search);
+        let opponent = urlParams.get('opponent') || 'random';
+        let debug = urlParams.get('debug') === 'true';
+        const opponentsList = ['kim', 'putin', 'khamenei', 'netanyahu', 'macron', 'xi', 'trudeau'];
+        if (opponent === 'random') {
+            opponent = opponentsList[Math.floor(Math.random() * opponentsList.length)];
+        }
+        let startAim = urlParams.get('startAim') === 'true';
+        let isInit = urlParams.get('init') === 'true';
+        
+        window.addEventListener('load', () => {
+            checkOrientation();
+            calculateLayout();
+            resetPositions();
+            resetGameStats();
+            document.getElementById('msg-text').innerHTML = 'CLICK TO START';
+            if (startAim || isInit) {
+                document.getElementById('message').style.display = 'none';
+            }
+        });
+        
+        // Opponent name removed from UI
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        let score = 0;
+        let attempts = 5;
+        let state = isInit ? 'pre_init' : (startAim ? 'aimX' : 'start'); 
+
+        // Special Forces Logic
+        let maxSpecialForces = Math.floor(Math.random() * 3); // 0, 1, or 2 allowed per game
+        let specialForcesUsed = 0;
+        let currentSpecialForceActive = false;
+        let bibiAttempts = 0;
+        let consecutiveGoals = 0;
+        let showedLastShotResult = false;
+
+        // Power Charge Logic
+        let kickPower = 50;
+        let powerDir = 1;
+        let powerSpeed = 160; 
+
+        // Dynamic Proportions
+        let goal = { x: 0, y: 0, w: 0, h: 0 };
+        let keeper = { x: 0, y: 0, w: 0, h: 0, targetX: 0, targetY: 0, pose: 'idle' };
+        let ball = { x: 0, y: 0, r: 15, destX: 0, destY: 0, scale: 1, startY: 0 };
+        let shooter = { w: 0, h: 0 };
+
+        function resetGameStats() {
+            score = 0;
+            attempts = 5;
+            consecutiveGoals = 0;
+            if (opponent !== 'netanyahu') {
+                bibiAttempts = 0;
+            }
+            specialForcesUsed = 0;
+            currentSpecialForceActive = false;
+            showedLastShotResult = false;
+        }
+
+        function calculateLayout() {
+            goal.w = width * 0.70; 
+            goal.x = width / 2 - goal.w / 2;
+            goal.y = height * 0.15; 
+            goal.h = height * 0.546; 
+
+            // Goalkeeper (+20% base size as requested)
+            keeper.h = goal.h * 0.648; 
+            keeper.w = keeper.h * 0.8; 
+            
+            // Persistent modifiers
+            if (opponent === 'putin') {
+                keeper.h *= 1.10; // Putin is 10% bigger than the new base
+                keeper.w *= 1.10;
+            } else if (opponent === 'trudeau') {
+                keeper.h *= 0.85; // Trudeau is 15% smaller than the new base
+                keeper.w *= 0.85;
+            }
+            
+            // Cap goalie width so he never spills out of the net on mobile
+            if (keeper.w > goal.w * 0.8) {
+                let ratio = (goal.w * 0.8) / keeper.w;
+                keeper.w *= ratio;
+                keeper.h *= ratio;
+            }
+            // Shooter (+20% size and then +5% bigger)
+            shooter.h = height * 0.50 * 1.2 * 1.05;
+            shooter.w = shooter.h * 0.6;
+            
+            ball.startY = height * 0.865;
+            ball.r = Math.max(8, Math.round(goal.h * 0.09)); // Perfectly proportional ball radius
+            cursorSpeedX = width * 0.94559; // Proportional cursor speed X (15% faster)
+            cursorSpeedY = height * 1.28944; // Proportional cursor speed Y (15% faster)
+
+            // Dynamic text sizing
+            let uiFontSize = Math.max(10, Math.round(goal.h * 0.058));
+            let messageFontSize = Math.max(11, Math.round(goal.h * 0.058));
+            document.getElementById('ui').style.fontSize = uiFontSize + 'px';
+            document.getElementById('message').style.fontSize = messageFontSize + 'px';
+        }
+
+        let aimX = width / 2;
+        let aimY = 0;
+        let cursorSpeedX = 900; 
+        let cursorSpeedY = 600;
+        let cursorDirX = 1;
+        let cursorDirY = 1;
+        let shotResult = '';
+        let shotSubtext = '';
+
+        calculateLayout();
+        resetPositions();
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            checkOrientation();
+            calculateLayout();
+            if(state !== 'shooting' && state !== 'result' && state !== 'last_result') resetPositions();
+        });
+
+        // Load Images
+        const bgImg = new Image(); bgImg.src = 'assets/sprites/stadium_bg.jpg';
+        const shooterIdle = new Image(); shooterIdle.src = 'assets/sprites/shooter_idle.png';
+        const shooterRun = new Image(); shooterRun.src = 'assets/sprites/shooter_run.png';
+        const shooterKick = new Image(); shooterKick.src = 'assets/sprites/shooter_kick.png';
+        
+        // Goalkeeper generic for now (user to upload specific ones later)
+        // Cache buster for images
+        const cb = new Date().getTime();
+
+        const goalieIdle = new Image(); goalieIdle.src = `assets/sprites/${opponent}_idle.png?cb=${cb}`;
+        const goalieLeft = new Image(); goalieLeft.src = `assets/sprites/${opponent}_dive_left.png?cb=${cb}`;
+        const goalieRight = new Image(); goalieRight.src = `assets/sprites/${opponent}_dive_right.png?cb=${cb}`;
+        
+        // Fallback to kim if specific doesn't exist
+        goalieIdle.onerror = function() { this.onerror=null; this.src = `assets/sprites/kim_idle.png?cb=${cb}`; };
+        goalieLeft.onerror = function() { this.onerror=null; this.src = `assets/sprites/kim_dive_left.png?cb=${cb}`; };
+        goalieRight.onerror = function() { this.onerror=null; this.src = `assets/sprites/kim_dive_right.png?cb=${cb}`; };
+
+        const ballImg = new Image(); ballImg.src = 'assets/sprites/ball.png';
+        const macronSurrenderImg = new Image(); macronSurrenderImg.src = `assets/sprites/macron_surrender.png?cb=${cb}`;
+        const pandaImg = new Image(); pandaImg.src = `assets/sprites/panda.png?cb=${cb}`; 
+        
+        let ballAngle = 0;
+        let shotTimer = 0; 
+        
+        function continueBibi() {
+            if (state === 'bibi_pissed') {
+                const otherOpponents = opponentsList.filter(o => o !== 'netanyahu');
+                const nextOpponent = otherOpponents[Math.floor(Math.random() * otherOpponents.length)];
+                window.location.href = `game_penalty.html?opponent=${nextOpponent}&startAim=true`;
+                return;
+            }
+            document.getElementById('bibi-options').style.display = 'none';
+            document.getElementById('message').style.display = 'none';
+            const footer = document.getElementById('msg-footer');
+            if (footer) footer.style.display = 'none';
+            state = 'start';
+            resetPositions();
+        }
+
+        function shareOnX() {
+            let roast = `Just scored ${score}/5 goals in Make Football Great Again! Play here: `;
+            
+            if (score === 3) {
+                if (opponent === 'kim') {
+                    roast = `Just played a very average match against Kim Jong Un. 3/5 goals. Not great, not terrible, but Trumpinho will make the next play yuge! ⚽🚀 Play here: `;
+                } else if (opponent === 'macron') {
+                    roast = `Scored 3/5 against Macron. Not great, not terrible, but definitely better than his average surrender. Let's make football great again! ⚽🏳️ Play here: `;
+                } else if (opponent === 'trudeau') {
+                    roast = `Scored 3/5 against Justin Trudeau. Soft defense, but my play was a bit average too. Not great, not terrible. Canada needs a real leader! ⚽🥅 Play here: `;
+                } else if (opponent === 'putin') {
+                    roast = `Scored 3/5 against Vladimir Putin. Not great, not terrible! No collusion, just an average American play. Will get the yuge win next time! ⚽🇷🇺 Play here: `;
+                } else if (opponent === 'khamenei') {
+                    roast = `Scored 3/5 against Khamenei. Not great, not terrible, but definitely better than his proxy league. Will dominate next time! ⚽🔥 Play here: `;
+                } else if (opponent === 'xi') {
+                    roast = `Scored 3/5 against Xi Jinping. The Pandas stood their ground. Not great, not terrible, but I'll conquer the Great Wall next time! ⚽🐼 Play here: `;
+                } else {
+                    roast = `Not great, not terrible! Just scored a very average 3/5 goals in Make Football Great Again! Play here: `;
+                }
+            } else {
+                if (opponent === 'kim') {
+                    roast = `Just absolutely destroyed Kim Jong Un on the pitch! His net defense is as weak as his little rockets. Total devastation! ⚽💥 Play here: `;
+                } else if (opponent === 'macron') {
+                    roast = `Easiest 5-0 of my life! Macron literally surrendered and waved the white flag before the ball even crossed the line. Hey France, you need a strong leader! 🏳️⚽ Play here: `;
+                } else if (opponent === 'trudeau') {
+                    roast = `Justin Trudeau is so soft! Zero defense, just let me score right across his net line like a wide-open border. Canada needs a real leader! ⚽🥅 Play here: `;
+                } else if (opponent === 'putin') {
+                    roast = `Just scored ${score}/5 against Vladimir Putin! VAR confirmed: absolutely NO COLLUSION, just pure, beautiful American dominance. Putin is crying! 🇷🇺⚽ Play here: `;
+                } else if (opponent === 'khamenei') {
+                    roast = `Scored ${score}/5 against Khamenei! Even with his ghost proxies, he couldn't stop my beautiful, powerful shots. Total American victory! ⚽🔥 Play here: `;
+                } else if (opponent === 'xi') {
+                    roast = `Xi Jinping tried to stop me with his Chinese Pandas, but my strikers are way ahead of him. Scored ${score}/5! Yuge win! 🐼⚽ Play here: `;
+                }
+            }
+            
+            let gameUrl = "https://trumpinho.xyz/";
+            let suffix = `\n\nMake Football Great Again \n$TRUMPINHO @trumpinho_xyz\n#FIFAWorldCup #WorldCup2026 #WeAre26`;
+            let shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(roast + gameUrl + suffix)}`;
+            window.open(shareUrl, '_blank');
+        }
+
+        document.addEventListener('mousedown', (e) => {
+            if (e.target.tagName === 'BUTTON') return; // Do not trigger aim logic when clicking UI buttons
+
+            if (state === 'pre_init') return;
+
+            if (state === 'special_hold') {
+                showResultScreen();
+                return;
+            }
+
+            if (state === 'bibi_pissed') {
+                const otherOpponents = opponentsList.filter(o => o !== 'netanyahu');
+                const nextOpponent = otherOpponents[Math.floor(Math.random() * otherOpponents.length)];
+                window.location.href = `game_penalty.html?opponent=${nextOpponent}&startAim=true`;
+                return;
+            }
+
+            // NETANYAHU CLICK INTERCEPTOR
+            if (opponent === 'netanyahu' && state === 'aimY') {
+                bibiAttempts++;
+                const msgBox = document.getElementById('message');
+                const msgText = document.getElementById('msg-text');
+                const bibiOpts = document.getElementById('bibi-options');
+                
+                msgBox.style.display = 'block';
+                bibiOpts.style.display = 'flex';
+                state = 'bibi_wait'; // freeze
+                
+                if (bibiAttempts === 1) {
+                    document.getElementById('bibi-btn-1').style.display = '';
+                    msgText.innerHTML = "Trumpinho, you can't shoot against me, choose another opponent.";
+                    document.getElementById('bibi-btn-1').innerText = "Choose another opponent";
+                    document.getElementById('bibi-btn-2').innerText = "Try another shot";
+                } else if (bibiAttempts === 2) {
+                    document.getElementById('bibi-btn-1').style.display = '';
+                    msgText.innerHTML = "Hey, Trumpinho. I warned you, no shooting against me and Israel.";
+                    document.getElementById('bibi-btn-1').innerText = "Sorry Bibi, I will choose another opponent.";
+                    document.getElementById('bibi-btn-2').innerText = "I am the GOAT, I can shoot.";
+                } else if (bibiAttempts >= 3) {
+                    msgText.innerHTML = "You really pissed me off, Trumpinho. Nobody will shoot on me and Israel, next goalie to the net.";
+                    bibiOpts.style.display = 'none';
+                    state = 'bibi_pissed';
+                }
+                return;
+            }
+
+            if (state === 'start_warning') {
+                resetGameStats();
+                state = 'aimX';
+                resetPositions();
+                document.getElementById('message').style.display = 'none';
+                return;
+            }
+
+            if (state === 'start') {
+                if ((opponent === 'putin' || opponent === 'trudeau') && attempts === 5) {
+                    state = 'start_warning';
+                    document.getElementById('msg-text').innerHTML = getStartMessage();
+                    return;
+                }
+
+                if (attempts === 5) {
+                    resetGameStats();
+                }
+                // Determine if special force activates for this shot (20% probability flat rate)
+                currentSpecialForceActive = (Math.random() < 0.20 && ['kim', 'xi', 'khamenei', 'macron'].includes(opponent));
+
+                state = 'aimX';
+                resetPositions();
+                document.getElementById('message').style.display = 'none';
+            } else if (state === 'aimX') {
+                state = 'aimY'; 
+            } else if (state === 'aimY') {
+                state = 'power';
+                kickPower = 50;
+                powerDir = 1;
+            } else if (state === 'power') {
+                takeShot(); 
+            } else if (state === 'result' && attempts > 0) {
+                state = 'start'; // Go back to start to require click to aim again
+                resetPositions();
+                document.getElementById('message').style.display = 'none';
+                document.getElementById('msg-text').innerHTML = 'CLICK TO START';
+            } else if (state === 'last_result') {
+                showedLastShotResult = true;
+                showResultScreen();
+            }
+        });
+
+        function resetPositions() {
+            ball.x = width / 2;
+            ball.y = ball.startY;
+            ball.scale = 1;
+            
+            // EXACTLY on the middle of the goal line (bottom of the net)
+            keeper.x = width / 2;
+            keeper.y = goal.y + goal.h - (keeper.h / 2);
+            
+            keeper.targetX = keeper.x;
+            keeper.targetY = keeper.y;
+            keeper.pose = 'idle';
+            aimX = width / 2;
+            aimY = goal.y + goal.h / 2;
+            shotSubtext = '';
+            kickPower = 50;
+            const footer = document.getElementById('msg-footer');
+            if (footer) footer.style.display = 'none';
+        }
+
+        function takeShot() {
+            state = 'shooting';
+            
+            let centerGoalX = goal.x + goal.w / 2;
+            let centerGoalY = goal.y + goal.h / 2;
+            let distFromCenter = Math.sqrt(Math.pow(aimX - centerGoalX, 2) + Math.pow(aimY - centerGoalY, 2));
+            
+            // Power scales inaccuracy: low power (e.g. 20%) is extremely accurate; high power (e.g. 100%) is highly chaotic
+            let powerFactor = 0.4 + (kickPower / 100) * 1.6;
+            let errorMagnitude = ((distFromCenter / 200) * 60) * powerFactor; 
+            
+            // Shrink circle near the bottom of net
+            let yRatio = (aimY - goal.y) / goal.h;
+            let shrinkFactor = Math.max(0.5, 1.0 - (yRatio * 0.5));
+            errorMagnitude *= shrinkFactor;
+
+            // Mobile targeting circle error reduction by 50%
+            const isMobileDevice = screen.height > screen.width;
+            if (isMobileDevice) {
+                errorMagnitude *= 0.5;
+            }
+            
+            let errorX = (Math.random() - 0.5) * errorMagnitude * 2;
+            let errorY = (Math.random() - 0.5) * errorMagnitude * 2;
+            
+            ball.destX = aimX + errorX;
+            ball.destY = aimY + errorY;
+
+            let diveDir = 2; // Default to Stand Center (middle move)
+            let diveHeight = 0;
+            
+            if (Math.random() < 0.70) {
+                // 70% probability: Actual corner jumps (dives)
+                let sideOpts = [0, 1];
+                diveDir = sideOpts[Math.floor(Math.random() * sideOpts.length)];
+                diveHeight = Math.floor(Math.random() * 2); // 0=low, 1=high
+            } else {
+                // 30% probability: Middle moves (standing center or lateral slides)
+                let middleOpts = [2, 3, 4];
+                diveDir = middleOpts[Math.floor(Math.random() * middleOpts.length)];
+            }
+            
+            if (currentSpecialForceActive && opponent === 'xi') {
+                let choices = [
+                    { dir: 0, height: 0 },
+                    { dir: 1, height: 0 },
+                    { dir: 2, height: 0 },
+                    { dir: Math.random() < 0.5 ? 3 : 4, height: 0 }
+                ];
+                let choice = choices[Math.floor(Math.random() * choices.length)];
+                diveDir = choice.dir;
+                diveHeight = choice.height;
+            } else if (currentSpecialForceActive && (opponent === 'kim' || opponent === 'macron')) {
+                diveDir = 2; // Kim and Macron stay in the middle/standing for their specials
+            }
+
+            if (currentSpecialForceActive && opponent === 'macron') {
+                score = 4; // Will become exactly 5/5 after score++ in evaluateShot()
+                attempts = 1; // Will become exactly 0 after attempts-- below
+            }
+
+            if (diveDir === 0) {
+                keeper.pose = 'dive_left';
+                keeper.targetX = goal.x + keeper.w/2;
+                keeper.targetY = (diveHeight === 0) ? goal.y + goal.h - keeper.h/2 : goal.y + keeper.h/2;
+                keeper.gridAction = (diveHeight === 0) ? 'bottom-left' : 'top-left';
+            } else if (diveDir === 1) {
+                keeper.pose = 'dive_right';
+                keeper.targetX = goal.x + goal.w - keeper.w/2;
+                keeper.targetY = (diveHeight === 0) ? goal.y + goal.h - keeper.h/2 : goal.y + keeper.h/2;
+                keeper.gridAction = (diveHeight === 0) ? 'bottom-right' : 'top-right';
+            } else if (diveDir === 3) {
+                keeper.pose = 'idle';
+                keeper.targetX = width/2 - goal.w * (20 / 300); // Slide Left (grid 170)
+                keeper.targetY = goal.y + goal.h - keeper.h/2;
+                keeper.gridAction = 'mid-left';
+            } else if (diveDir === 4) {
+                keeper.pose = 'idle';
+                keeper.targetX = width/2 + goal.w * (20 / 300); // Slide Right (grid 130)
+                keeper.targetY = goal.y + goal.h - keeper.h/2;
+                keeper.gridAction = 'mid-right';
+            } else {
+                keeper.pose = 'idle';
+                keeper.targetX = width/2; // Stand Center
+                keeper.targetY = goal.y + goal.h - keeper.h/2;
+                keeper.gridAction = 'middle';
+            }
+
+            attempts--;
+            shotTimer = 0;
+            ball.originalX = ball.x;
+            ball.originalY = ball.y;
+            ball.deflected = false;
+            ball.deflectType = 'none';
+        }
+
+        function update(deltaTime) {
+            if (state === 'aimX') {
+                aimX += cursorSpeedX * cursorDirX * deltaTime;
+                if (aimX < goal.x - 20) {
+                    aimX = goal.x - 20;
+                    cursorDirX = 1;
+                } else if (aimX > goal.x + goal.w + 20) {
+                    aimX = goal.x + goal.w + 20;
+                    cursorDirX = -1;
+                }
+            } else if (state === 'aimY') {
+                aimY += cursorSpeedY * cursorDirY * deltaTime;
+                if (aimY < goal.y - 20) {
+                    aimY = goal.y - 20;
+                    cursorDirY = 1;
+                } else if (aimY > goal.y + goal.h * 1.1) {
+                    aimY = goal.y + goal.h * 1.1;
+                    cursorDirY = -1;
+                }
+            } else if (state === 'power') {
+                kickPower += powerSpeed * powerDir * deltaTime;
+                if (kickPower > 100) { kickPower = 100; powerDir = -1; }
+                else if (kickPower < 0) { kickPower = 0; powerDir = 1; }
+            } else if (state === 'shooting') {
+                shotTimer += deltaTime;
+                
+                // Lerp speed scales with power: from 0.04 (slow) to 0.15 (extremely fast rocket)
+                let lerpRate = 0.04 + (kickPower / 100) * 0.11;
+                
+                if (!ball.deflected) {
+                    ball.x += (ball.destX - ball.x) * lerpRate;
+                    ball.y += (ball.destY - ball.y) * lerpRate;
+                    
+                    // Shrink ball scale slightly to simulate 3D depth towards the net (maximum 15% shrinkage)
+                    let totalDist = Math.max(1, ball.startY - ball.destY);
+                    let progress = (ball.startY - ball.y) / totalDist;
+                    progress = Math.max(0, Math.min(1, progress));
+                    ball.scale = 1.0 - progress * 0.15; 
+
+                    ballAngle += 0.1 + (kickPower / 100) * 0.3;
+
+                    keeper.x += (keeper.targetX - keeper.x) * 0.1;
+                    keeper.y += (keeper.targetY - keeper.y) * 0.1;
+
+                    if (Math.abs(ball.y - ball.destY) < 5) {
+                        evaluateShot();
+                    }
+                } else {
+                    // Deflection animation physics
+                    ball.x += (ball.deflectDestX - ball.x) * 0.12;
+                    ball.y += (ball.deflectDestY - ball.y) * 0.12;
+                    ballAngle += 0.2;
+                    
+                    if (Math.abs(ball.y - ball.deflectDestY) < 8 && Math.abs(ball.x - ball.deflectDestX) < 8) {
+                        // After bounce/deflection finishes, show the results dialog
+                        state = 'result';
+                        showResultScreen();
+                    }
+                }
+            }
+        }
+
+        function evaluateShot() {
+            let isGoal = false;
+            let isSave = false;
+            let isMiss = false;
+
+            // Logical Grid Calculation
+            // Height: 1 (Bottom) to 100 (Top)
+            let gridH = ((goal.y + goal.h - ball.destY) / goal.h) * 100;
+            // Width: 1 (Right) to 300 (Left)
+            let gridW = ((goal.x + goal.w - ball.destX) / goal.w) * 300;
+
+            let isWeakShot = (gridH < 0 && gridH >= -10);
+
+            if (gridH < 1 || gridH > 100 || gridW < 1 || gridW > 300) {
+                isMiss = true;
+            } else {
+                // Determine Core Boundaries with "Sweet Spot Corner Gaps"
+                let covUpMin = 45, covUpMax = 95, covDownMin = 1, covDownMax = 55;
+                let covRightMin = 15, covRightMax = 120, covLeftMin = 181, covLeftMax = 285;
+                let covMidHMin = 0, covMidHMax = 100;
+
+                // Standing/Sliding Hitboxes (20% wider: middle width standard expanded to 120-180, mid-left to 140-200, mid-right to 100-160)
+                let covMidWMin = 105, covMidWMax = 195;
+                let covMidLeftWMin = 125, covMidLeftWMax = 215;
+                let covMidRightWMin = 85, covMidRightWMax = 175;
+
+                // Bottom corners cover to the absolute edge
+                let covBottomRightMin = 1, covBottomRightMax = 120;
+                let covBottomLeftMin = 181, covBottomLeftMax = 300;
+
+                if (opponent === 'putin') {
+                    covUpMin = 42; covUpMax = 98; covDownMax = 58;
+                    covRightMin = 7; covRightMax = 131; covLeftMin = 169; covLeftMax = 294;
+                    covMidWMin = 93; covMidWMax = 207;
+                    covMidLeftWMin = 113; covMidLeftWMax = 227;
+                    covMidRightWMin = 73; covMidRightWMax = 187;
+                    covBottomRightMin = 1; covBottomRightMax = 131;
+                    covBottomLeftMin = 169; covBottomLeftMax = 300;
+                } else if (opponent === 'trudeau') {
+                    covUpMin = 50; covUpMax = 90; covDownMax = 50;
+                    covRightMin = 25; covRightMax = 105; covLeftMin = 196; covLeftMax = 275;
+                    covMidHMax = 85;
+                    covMidWMin = 117; covMidWMax = 183;
+                    covMidLeftWMin = 137; covMidLeftWMax = 203;
+                    covMidRightWMin = 97; covMidRightWMax = 163;
+                    covBottomRightMin = 1; covBottomRightMax = 105;
+                    covBottomLeftMin = 196; covBottomLeftMax = 300;
+                }
+
+                let inHeight = false;
+                let inWidth = false;
+                
+                // For fingertip deflections (5 units expansion)
+                let inHeightFinger = false;
+                let inWidthFinger = false;
+
+                if (keeper.gridAction === 'top-right') {
+                    inHeight = (gridH >= covUpMin && gridH <= covUpMax);
+                    inWidth = (gridW >= covRightMin && gridW <= covRightMax);
+                    
+                    inHeightFinger = (gridH >= (covUpMin - 5) && gridH <= (covUpMax + 5));
+                    inWidthFinger = (gridW >= (covRightMin - 5) && gridW <= (covRightMax + 5));
+                } else if (keeper.gridAction === 'bottom-right') {
+                    inHeight = (gridH >= covDownMin && gridH <= covDownMax);
+                    inWidth = (gridW >= covBottomRightMin && gridW <= covBottomRightMax);
+                    
+                    inHeightFinger = (gridH >= covDownMin && gridH <= (covDownMax + 5));
+                    inWidthFinger = (gridW >= (covBottomRightMin - 5) && gridW <= (covBottomRightMax + 5));
+                } else if (keeper.gridAction === 'top-left') {
+                    inHeight = (gridH >= covUpMin && gridH <= covUpMax);
+                    inWidth = (gridW >= covLeftMin && gridW <= covLeftMax);
+                    
+                    inHeightFinger = (gridH >= (covUpMin - 5) && gridH <= (covUpMax + 5));
+                    inWidthFinger = (gridW >= (covLeftMin - 5) && gridW <= (covLeftMax + 5));
+                } else if (keeper.gridAction === 'bottom-left') {
+                    inHeight = (gridH >= covDownMin && gridH <= covDownMax);
+                    inWidth = (gridW >= covBottomLeftMin && gridW <= covBottomLeftMax);
+                    
+                    inHeightFinger = (gridH >= covDownMin && gridH <= (covDownMax + 5));
+                    inWidthFinger = (gridW >= (covBottomLeftMin - 5) && gridW <= (covBottomLeftMax + 5));
+                } else if (keeper.gridAction === 'middle') {
+                    inHeight = (gridH >= covMidHMin && gridH <= covMidHMax);
+                    inWidth = (gridW >= covMidWMin && gridW <= covMidWMax);
+                    
+                    inHeightFinger = (gridH >= covMidHMin && gridH <= (covMidHMax + 5));
+                    inWidthFinger = (gridW >= (covMidWMin - 5) && gridW <= (covMidWMax + 5));
+                } else if (keeper.gridAction === 'mid-left') {
+                    inHeight = (gridH >= covMidHMin && gridH <= covMidHMax);
+                    inWidth = (gridW >= covMidLeftWMin && gridW <= covMidLeftWMax);
+                    
+                    inHeightFinger = (gridH >= covMidHMin && gridH <= (covMidHMax + 5));
+                    inWidthFinger = (gridW >= (covMidLeftWMin - 5) && gridW <= (covMidLeftWMax + 5));
+                } else if (keeper.gridAction === 'mid-right') {
+                    inHeight = (gridH >= covMidHMin && gridH <= covMidHMax);
+                    inWidth = (gridW >= covMidRightWMin && gridW <= covMidRightWMax);
+                    
+                    inHeightFinger = (gridH >= covMidHMin && gridH <= (covMidHMax + 5));
+                    inWidthFinger = (gridW >= (covMidRightWMin - 5) && gridW <= (covMidRightWMax + 5));
+                }
+
+                if (inHeight && inWidth) {
+                    isSave = true;
+                } else if (inHeightFinger && inWidthFinger) {
+                    // FINGERTIP DEFLECTION ZONE!
+                    ball.deflected = true;
+                    if (gridH >= 94) {
+                        ball.deflectType = 'crossbar';
+                        ball.deflectDestX = ball.x + (Math.random() - 0.5) * 80;
+                        ball.deflectDestY = ball.y + goal.h * 0.35; // Bounce down
+                        shotSubtext = "FINGERTIP SAVE!\nDEFLECTED OFF THE CROSSBAR!";
+                    } else if (gridW >= 285) {
+                        ball.deflectType = 'post-left';
+                        ball.deflectDestX = goal.x + goal.w * 0.25; 
+                        ball.deflectDestY = ball.y + goal.h * 0.3;
+                        shotSubtext = "FINGERTIP SAVE!\nDEFLECTED OFF THE LEFT POST!";
+                    } else if (gridW <= 15) {
+                        ball.deflectType = 'post-right';
+                        ball.deflectDestX = goal.x + goal.w * 0.75; 
+                        ball.deflectDestY = ball.y + goal.h * 0.3;
+                        shotSubtext = "FINGERTIP SAVE!\nDEFLECTED OFF THE RIGHT POST!";
+                    } else {
+                        ball.deflectType = 'wide';
+                        ball.deflectDestX = (gridW > 150) ? goal.x - 70 : goal.x + goal.w + 70;
+                        ball.deflectDestY = ball.y - 30;
+                        shotSubtext = "FINGERTIP SAVE!\nDEFLECTED WIDE OF THE NET!";
+                    }
+                    isSave = true; 
+                } else {
+                    isGoal = true;
+                }
+            }
+
+            // Khamenei Proxy Check
+            if (currentSpecialForceActive && opponent === 'khamenei') {
+                let proxyX = goal.x + goal.w - (keeper.x - goal.x);
+                let proxyY = keeper.y;
+                if (ball.x + ball.r > proxyX - keeper.w && ball.x - ball.r < proxyX + keeper.w && 
+                    ball.y + ball.r > proxyY - keeper.h && ball.y - ball.r < proxyY + keeper.h) {
+                    isSave = true; isGoal = false; isMiss = false; ball.deflected = false;
+                }
+                if (isSave) {
+                    shotSubtext = "Hey Trumpinho, you can't beat me and my proxies. Watch out in the Strait of Hormuz!";
+                }
+            }
+
+            // Xi Pandas Check
+            if (currentSpecialForceActive && opponent === 'xi') {
+                let isTopCorner = ball.destY < goal.y + goal.h * 0.4 && 
+                                 (ball.destX < goal.x + goal.w * 0.3 || ball.destX > goal.x + goal.w * 0.7);
+                if (isTopCorner) {
+                    isSave = true; isGoal = false; isMiss = false; ball.deflected = false;
+                    shotSubtext = "Trumpinho, are you surprised? We are way ahead of you!";
+                }
+            }
+
+            // Kim Explosion Check
+            if (currentSpecialForceActive && opponent === 'kim') {
+                isSave = true; isGoal = false; isMiss = false; ball.deflected = false;
+                shotSubtext = "Hey Trumpinho! I am the best ROCKET MAN on the Earth!";
+            }
+
+            // Macron Surrender Check
+            if (currentSpecialForceActive && opponent === 'macron') {
+                isGoal = true; isSave = false; isMiss = false; ball.deflected = false;
+                shotSubtext = "Emmanuel: 'I surrender! Please do not hit me!'";
+            }
+
+            // Determine final text
+            if (isMiss) {
+                if (isWeakShot) {
+                    shotResult = "TOO WEAK - NO GOAL.";
+                    shotSubtext = "That shot was so weak it did not even reach the net. Very low energy. Sad.";
+                } else {
+                    shotResult = "MISSED THE NET.";
+                }
+                consecutiveGoals = 0;
+            } else if (isSave) {
+                consecutiveGoals = 0;
+                if (currentSpecialForceActive && opponent === 'kim') {
+                    shotResult = "BALL EXPLODED - NO GOAL!";
+                } else if (currentSpecialForceActive && opponent === 'xi') {
+                    shotResult = "SAVED BY CHINESE PANDAS";
+                } else if (ball.deflected) {
+                    shotResult = "DEFLECTED - NO GOAL!";
+                } else {
+                    shotResult = "SAVED BY THE KEEPER!";
+                }
+                if (currentSpecialForceActive && opponent === 'trudeau' && !ball.deflected) {
+                    shotSubtext = "Justin: 'Oh, I'm so sorry aboot that!'";
+                }
+            } else {
+                shotResult = "GOOOOAL!";
+                score++;
+                consecutiveGoals++;
+                if (opponent === 'trudeau' && consecutiveGoals === 3) {
+                    shotSubtext = "It's not fair, Trumpinho! I am much smaller than the others. I believe in peaceful cooperation, not attacks!";
+                }
+            }
+
+            // If the ball was deflected, we pause results until animation completes
+            if (ball.deflected) {
+                state = 'shooting'; // keep loop in shooting
+                document.getElementById('score').innerText = score;
+                document.getElementById('attempts').innerText = attempts;
+                return;
+            }
+
+            if (currentSpecialForceActive) {
+                state = 'special_hold';
+                return;
+            }
+
+            showResultScreen();
+        }
+
+        function showResultScreen() {
+            state = 'result';
+            
+            const goalieNames = {
+                'kim': 'Kim Jong Un',
+                'putin': 'Vladimir Putin',
+                'khamenei': 'Ali Khamenei',
+                'macron': 'Emmanuel Macron',
+                'xi': 'Xi Jinping',
+                'trudeau': 'Justin Trudeau'
+            };
+            let goalieName = goalieNames[opponent] || opponent;
+
+            document.getElementById('score').innerText = score;
+            document.getElementById('attempts').innerText = attempts;
+            
+            const msgBox = document.getElementById('message');
+            const msgText = document.getElementById('msg-text');
+            document.getElementById('bibi-options').style.display = 'none';
+            msgBox.style.display = 'block';
+            let finalOutput = shotResult;
+            let subStyle = "font-size: 0.75em;";
+            
+            if (currentSpecialForceActive) {
+                // Make all first lines of special moves a bit smaller (0.8em)
+                finalOutput = "<span style='font-size: 0.8em;'>" + shotResult + "</span>";
+                // Make all yellow subtexts of special moves bigger (1em)
+                subStyle = "font-size: 1em;";
+            }
+
+            if (opponent === 'kim' && currentSpecialForceActive) {
+                subStyle = "font-size: 1.1em;"; // 10% bigger than 1em
+            }
+            
+            // Trudeau 5-Goal Override (make first line smaller and second line bigger)
+            if (attempts === 0 && opponent === 'trudeau' && score === 5) {
+                finalOutput = "<span style='font-size: 0.7em;'>I can score against this goalie whenever I want.</span>";
+                shotSubtext = "<span style='font-size: 1.15em;'>Canada, you need a real leader like Trumpinho.</span>";
+                subStyle = "font-size: 1.15em;"; // Ensure subStyle reflects the larger text
+            }
+
+            // Macron Special Move end of game override
+            if (opponent === 'macron' && currentSpecialForceActive) {
+                finalOutput = "<span style='font-size: 0.8em;'>TOTAL DESTRUCTION, 5/5.</span>";
+                shotSubtext = "Hey France, you need stronger leader just like me, Turmpinho.";
+                subStyle = "font-size: 1em;";
+            }
+
+            if (shotSubtext) {
+                if (opponent === 'trudeau' && score === 5 && attempts === 0) {
+                    finalOutput += "<br><br><span style='color:#ffcc00;'>" + shotSubtext + "</span>";
+                } else {
+                    finalOutput += "<br><br><span style='color:#ffcc00; " + subStyle + "'>" + shotSubtext.replace(/\n/g, "<br>") + "</span>";
+                }
+            }
+
+            if (attempts === 0 && !showedLastShotResult) {
+                state = 'last_result';
+                document.getElementById('share-container').style.display = 'none';
+                document.getElementById('msg-footer').style.display = 'none';
+                msgText.innerHTML = `${finalOutput}<br><br><span style='font-size: 0.65em;'>Click to see final score</span>`;
+                return;
+            }
+            
+            // Show share button container ONLY if game is over and player scored 3/5 or more
+            if (attempts === 0 && score >= 3) {
+                document.getElementById('share-container').style.display = 'flex';
+                if (score === 3) {
+                    document.getElementById('share-btn').innerText = "Fine, share this average play on X...";
+                } else {
+                    document.getElementById('share-btn').innerText = "SHARE THIS HUGE WIN ON X";
+                }
+            } else {
+                document.getElementById('share-container').style.display = 'none';
+            }
+            
+            if (attempts > 0) {
+                msgText.innerHTML = `${finalOutput}<br><br><span style='font-size: 0.65em;'>Click to shoot again</span>`;
+                document.getElementById('msg-footer').style.display = 'none';
+            } else {
+                let endMessage = "";
+                let gameOverText = `<span style='font-size: 1em; color: #fff; text-shadow: 2px 2px 0 #000; font-weight: bold; display: block; margin-bottom: 15px;'>GAME OVER.</span>`;
+                if (score < 3) {
+                    // Vibrant premium neon coral red for the failure roast text
+                    let failureRoast = `<span style='color:#ff4757; font-size: 0.85em; line-height: 1.4; display: block; font-weight: bold; text-shadow: 2px 2px 0 #000;'>TOTAL FAILURE. ${score}/5 is low energy. No share button for losers. Go practice your kicks, Trumpinho is disappointed.</span>`;
+                    endMessage = `${gameOverText}${failureRoast}`;
+                } else if (score === 3) {
+                    // Vibrant premium neon orange for average "not great, not terrible" score
+                    let averageRoast = `<span style='color:#ff9f43; font-size: 0.85em; line-height: 1.4; display: block; font-weight: bold; text-shadow: 2px 2px 0 #000;'>NOT GREAT, NOT TERRIBLE. 3/5 is okay, maybe a passing grade, but Trumpinho only likes yuge winners. Share this average score, but practice and get 5/5 next time.</span>`;
+                    endMessage = `${gameOverText}${averageRoast}`;
+                } else {
+                    // Vibrant gold victory text for positive roast (4/5 or 5/5)
+                    let successRoast = `<span style='color:#ffcc00; font-size: 0.85em; line-height: 1.4; display: block; font-weight: bold; text-shadow: 2px 2px 0 #000;'>HUGE WIN. ${score}/5 is yuge, pure genius. You absolutely destroyed ${goalieName}. Total victory.</span>`;
+                    
+                    // TRUDEAU 5/5 OVERRIDE INTEGRATION
+                    if (opponent === 'trudeau' && score === 5) {
+                        successRoast = `<span style='color:#fff; font-size: 0.7em; line-height: 1.4; display: block; font-weight: bold; text-shadow: 2px 2px 0 #000; margin-bottom: 10px;'>I can score against this goalie whenever I want.</span>` +
+                                       `<span style='color:#ffcc00; font-size: 1.15em; line-height: 1.4; display: block; font-weight: bold; text-shadow: 2px 2px 0 #000;'>Canada, you need a real leader like Trumpinho.</span>`;
+                    }
+                    endMessage = `${gameOverText}${successRoast}`;
+                }
+                msgText.innerHTML = endMessage;
+                document.getElementById('msg-footer').style.display = 'block';
+            }
+        }
+
+        function getStartMessage() {
+            if (opponent === 'putin' && attempts === 5) {
+                return "<span style='color:#ff4757; font-size:16px; font-weight:bold; display:block; margin-bottom:15px;'>PUTIN'S STRATEGIC WARNING!</span>" +
+                       "<span style='color:#ffcc00; font-size:12px; line-height:1.6; display:block;'>\"In Russia, goal net is vast like Motherland. Russia is much bigger than USA, that is why I am bigger than other goalies. Not so easy to score against me, Trumpinho!\"</span>" +
+                       "<br><span style='font-size:10px; color:#fff;'>Click to start match</span>";
+            }
+            if (opponent === 'trudeau' && attempts === 5) {
+                return "<span style='color:#54a0ff; font-size:16px; font-weight:bold; display:block; margin-bottom:15px;'>TRUDEAU'S POLITE APOLOGY!</span>" +
+                       "<span style='color:#ffcc00; font-size:12px; line-height:1.6; display:block;'>\"I apologize in advance if I catch any of your shots, Trumpinho. I really do not want any problems, that is why I am smaller than anyone!\"</span>" +
+                       "<br><span style='font-size:10px; color:#fff;'>Click to start match</span>";
+            }
+            return "CLICK TO START";
+        }
+
+        function getSpecialMoveText() {
+            if (opponent === 'kim') return "KIM'S ROCKET DEFENSE: BALL EXPLODED!";
+            if (opponent === 'macron') return "MACRON SURRENDER PROTOCOL: ACTIVE!";
+            if (opponent === 'xi') return "XI'S GREAT WALL: PANDA SHIELD!";
+            if (opponent === 'khamenei') return "KHAMENEI'S PROXY SHADOW DEFENSE!";
+            if (opponent === 'trudeau') return "TRUDEAU'S SPECIAL MOVE: APOLOGIZE!";
+            return "SPECIAL MOVE ACTIVATED!";
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+
+            if (bgImg.complete) ctx.drawImage(bgImg, 0, 0, width, height);
+
+            // Xi's Pandas
+            if (currentSpecialForceActive && opponent === 'xi' && (state === 'shooting' || state === 'special_hold' || state === 'result' || state === 'last_result')) {
+                if (pandaImg.complete && pandaImg.naturalHeight > 0) {
+                    let pw = 144;
+                    let ph = pandaImg.naturalHeight * (pw / pandaImg.naturalWidth);
+                    ctx.drawImage(pandaImg, goal.x + 20, goal.y + 10, pw, ph);
+                    ctx.drawImage(pandaImg, goal.x + goal.w - pw - 20, goal.y + 10, pw, ph);
+                } else {
+                    ctx.fillStyle = 'black';
+                    ctx.font = "60px Arial";
+                    ctx.fillText("🐼", goal.x + 20, goal.y + 60);
+                    ctx.fillText("🐼", goal.x + goal.w - 80, goal.y + 60);
+                }
+            }
+
+            // Draw Keeper (or Macron Surrender)
+            let currentGoalieImg = goalieIdle;
+            if (state === 'shooting' || state === 'special_hold' || state === 'result' || state === 'last_result') {
+                if (keeper.pose === 'dive_left') currentGoalieImg = goalieLeft;
+                if (keeper.pose === 'dive_right') currentGoalieImg = goalieRight;
+            }
+            
+            if (currentSpecialForceActive && opponent === 'macron' && (state === 'shooting' || state === 'special_hold' || state === 'result' || state === 'last_result')) {
+                // Macron Surrender State
+                let safeX = isNaN(keeper.x) ? (width / 2) : keeper.x;
+                let safeY = isNaN(keeper.y) ? (goal.y + goal.h - keeper.h/2) : keeper.y;
+                let safeW = (isNaN(keeper.w) || keeper.w <= 0) ? 100 : keeper.w;
+                let safeH = (isNaN(keeper.h) || keeper.h <= 0) ? 120 : keeper.h;
+                if (macronSurrenderImg.complete && macronSurrenderImg.naturalHeight > 0) {
+                    let offsetY = 0;
+                    ctx.drawImage(macronSurrenderImg, safeX - safeW/2, safeY - safeH/2 + offsetY, safeW, safeH);
+                } else {
+                    ctx.fillStyle = '#fff';
+                    ctx.fillRect(safeX - safeW/2, safeY - safeH/2, safeW, safeH);
+                    ctx.fillStyle = '#000';
+                    ctx.font = '40px Arial';
+                    ctx.fillText("🏳️", safeX - 20, safeY + safeH/2);
+                }
+            } else {
+                // Iron-clad rendering for goalie to prevent NaN bugs
+                let safeX = isNaN(keeper.x) ? (width / 2) : keeper.x;
+                let safeY = isNaN(keeper.y) ? (goal.y + goal.h - keeper.h/2) : keeper.y;
+                let safeW = (isNaN(keeper.w) || keeper.w <= 0) ? 100 : keeper.w;
+                let safeH = (isNaN(keeper.h) || keeper.h <= 0) ? 120 : keeper.h;
+
+                // Visual Width/Height Swap when jumping
+                let drawW = safeW;
+                let drawH = safeH;
+                if (keeper.pose !== 'idle') {
+                    drawW = safeH * 1.1; 
+                    drawH = safeW;
+                }
+
+                if (state !== 'start' && state !== 'pre_init') {
+                    if (currentGoalieImg.complete && currentGoalieImg.naturalHeight > 0) {
+                        let offsetY = 0;
+                        ctx.drawImage(currentGoalieImg, safeX - drawW/2, safeY - drawH/2 + offsetY, drawW, drawH);
+                    } else {
+                        ctx.fillStyle = '#e63946';
+                        ctx.fillRect(safeX - drawW/2, safeY - drawH/2, drawW, drawH);
+                    }
+                }
+            }
+               // Draw Background Grid Hitbox Debugger
+            if (debug && (state === 'shooting' || state === 'result')) {
+                let covUpMin = 45, covUpMax = 95, covDownMin = 1, covDownMax = 55;
+                let covRightMin = 15, covRightMax = 120, covLeftMin = 181, covLeftMax = 285;
+                let covMidHMin = 0, covMidHMax = 100;
+                
+                let covMidWMin = 105, covMidWMax = 195;
+                let covMidLeftWMin = 125, covMidLeftWMax = 215;
+                let covMidRightWMin = 85, covMidRightWMax = 175;
+
+                let covBottomRightMin = 1, covBottomRightMax = 120;
+                let covBottomLeftMin = 181, covBottomLeftMax = 300;
+
+                if (opponent === 'putin') {
+                    covUpMin = 42; covUpMax = 98; covDownMax = 58;
+                    covRightMin = 7; covRightMax = 131; covLeftMin = 169; covLeftMax = 294;
+                    covMidWMin = 93; covMidWMax = 207;
+                    covMidLeftWMin = 113; covMidLeftWMax = 227;
+                    covMidRightWMin = 73; covMidRightWMax = 187;
+                    covBottomRightMin = 1; covBottomRightMax = 131;
+                    covBottomLeftMin = 169; covBottomLeftMax = 300;
+                } else if (opponent === 'trudeau') {
+                    covUpMin = 50; covUpMax = 90; covDownMax = 50;
+                    covRightMin = 25; covRightMax = 105; covLeftMin = 196; covLeftMax = 275;
+                    covMidHMax = 85;
+                    covMidWMin = 117; covMidWMax = 183;
+                    covMidLeftWMin = 137; covMidLeftWMax = 203;
+                    covMidRightWMin = 97; covMidRightWMax = 163;
+                    covBottomRightMin = 1; covBottomRightMax = 105;
+                    covBottomLeftMin = 196; covBottomLeftMax = 300;
+                }
+                
+                let hMin = 0, hMax = 0, wMin = 0, wMax = 0;
+                if (keeper.gridAction === 'top-right') { hMin = covUpMin; hMax = covUpMax; wMin = covRightMin; wMax = covRightMax; }
+                else if (keeper.gridAction === 'bottom-right') { hMin = covDownMin; hMax = covDownMax; wMin = covBottomRightMin; wMax = covBottomRightMax; }
+                else if (keeper.gridAction === 'top-left') { hMin = covUpMin; hMax = covUpMax; wMin = covLeftMin; wMax = covLeftMax; }
+                else if (keeper.gridAction === 'bottom-left') { hMin = covDownMin; hMax = covDownMax; wMin = covBottomLeftMin; wMax = covBottomLeftMax; }
+                else if (keeper.gridAction === 'middle') { hMin = covMidHMin; hMax = covMidHMax; wMin = covMidWMin; wMax = covMidWMax; }
+                else if (keeper.gridAction === 'mid-left') { hMin = covMidHMin; hMax = covMidHMax; wMin = covMidLeftWMin; wMax = covMidLeftWMax; }
+                else if (keeper.gridAction === 'mid-right') { hMin = covMidHMin; hMax = covMidHMax; wMin = covMidRightWMin; wMax = covMidRightWMax; }
+                
+                let pixelXLeft = goal.x + goal.w - (wMax / 300) * goal.w;
+                let pixelW = ((wMax - wMin) / 300) * goal.w;
+                let pixelYTop = goal.y + goal.h - (hMax / 100) * goal.h;
+                let pixelH = ((hMax - hMin) / 100) * goal.h;
+                
+                ctx.fillStyle = 'rgba(255, 200, 0, 0.4)'; 
+                ctx.fillRect(pixelXLeft, pixelYTop, pixelW, pixelH);
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(pixelXLeft, pixelYTop, pixelW, pixelH);
+            }          
+
+            // Draw Khamenei Proxy (Only visible after kick/during shot, not before)
+            if (currentSpecialForceActive && opponent === 'khamenei' && (state === 'shooting' || state === 'special_hold' || state === 'result' || state === 'last_result')) {
+                let proxyX = goal.x + goal.w - (keeper.x - goal.x);
+                let proxyY = keeper.y;
+                
+                let proxyImg = goalieIdle;
+                if (keeper.pose === 'dive_left') proxyImg = goalieRight;
+                else if (keeper.pose === 'dive_right') proxyImg = goalieLeft;
+
+                let safeW = (isNaN(keeper.w) || keeper.w <= 0) ? 100 : keeper.w;
+                let safeH = (isNaN(keeper.h) || keeper.h <= 0) ? 120 : keeper.h;
+
+                let drawW = safeW;
+                let drawH = safeH;
+                if (keeper.pose !== 'idle') {
+                    drawW = safeH * 1.1; 
+                    drawH = safeW;
+                }
+
+                if (proxyImg.complete && proxyImg.naturalHeight > 0) {
+                    ctx.filter = 'brightness(300%) drop-shadow(0 0 10px white)';
+                    ctx.globalAlpha = 0.6;
+                    let offsetY = 0;
+                    ctx.drawImage(proxyImg, proxyX - drawW/2, proxyY - drawH/2 + offsetY, drawW, drawH);
+                    ctx.globalAlpha = 1.0;
+                    ctx.filter = 'none';
+                }
+            }
+
+            // Crosshair
+            if (state === 'aimX' || state === 'aimY' || state === 'power') {
+                ctx.strokeStyle = (state === 'power') ? 'rgba(255, 204, 0, 0.5)' : '#ffcc00';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(aimX - 20, aimY); ctx.lineTo(aimX + 20, aimY);
+                ctx.moveTo(aimX, aimY - 20); ctx.lineTo(aimX, aimY + 20);
+                ctx.stroke();
+
+                if (state === 'aimY' || state === 'power') {
+                    let distFromCenter = Math.sqrt(Math.pow(aimX - (goal.x+goal.w/2), 2) + Math.pow(aimY - (goal.y+goal.h/2), 2));
+                    let powerFactor = 0.4 + (kickPower / 100) * 1.6;
+                    if (state === 'aimY') powerFactor = 1.0; // Estimate at average power
+                    let errorMagnitude = ((distFromCenter / 200) * 60) * powerFactor;
+
+                    // Shrink circle near the bottom of net
+                    let yRatio = (aimY - goal.y) / goal.h;
+                    let shrinkFactor = Math.max(0.5, 1.0 - (yRatio * 0.5));
+                    errorMagnitude *= shrinkFactor;
+
+                    // Mobile targeting circle error reduction by 50%
+                    const isMobileDevice = screen.height > screen.width;
+                    if (isMobileDevice) {
+                        errorMagnitude *= 0.5;
+                    }
+                    
+                    ctx.strokeStyle = (state === 'power') ? 'rgba(255, 0, 0, 0.6)' : 'rgba(255, 0, 0, 0.4)';
+                    ctx.beginPath();
+                    ctx.arc(aimX, aimY, errorMagnitude, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            }
+
+            // Ball or Explosion
+            if (currentSpecialForceActive && opponent === 'kim' && (state === 'shooting' || state === 'special_hold' || state === 'result' || state === 'last_result')) {
+                if (state === 'shooting' || state === 'special_hold') {
+                    ctx.font = `${ball.r * 8}px Arial`;
+                    ctx.fillText("💥", ball.x - ball.r*4, ball.y + ball.r * 3);
+                }
+            } else if (state !== 'start') {
+                if (ballImg.complete && ballImg.naturalHeight > 0) {
+                    let currentRadius = ball.r * ball.scale;
+                    ctx.save();
+                    ctx.translate(ball.x, ball.y);
+                    ctx.rotate(ballAngle);
+                    ctx.drawImage(ballImg, -currentRadius, -currentRadius, currentRadius * 2, currentRadius * 2);
+                    ctx.restore();
+                } else {
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath();
+                    ctx.arc(ball.x, ball.y, ball.r * ball.scale, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            
+            // Shooter Animation
+            let currentShooterImg = shooterIdle;
+            if (state === 'shooting') {
+                if (shotTimer < 0.15) currentShooterImg = shooterRun;
+                else currentShooterImg = shooterKick;
+            } else if (state === 'result' || state === 'last_result') {
+                currentShooterImg = shooterIdle;
+            }
+
+            let shooterY = ball.startY + (height * 0.085) - shooter.h * 0.90;
+            if (currentShooterImg.complete && currentShooterImg.naturalHeight > 0) {
+                ctx.drawImage(currentShooterImg, width / 2 - shooter.w * 0.9, shooterY, shooter.w, shooter.h);
+            } else {
+                ctx.fillStyle = '#ffcc00';
+                ctx.fillRect(width / 2 - shooter.w * 0.9, shooterY, shooter.w, shooter.h);
+            }
+
+            // Draw sleek vertical Power Charge Meter when in 'power' state
+            if (state === 'power' && width >= 768) {
+                let barX = Math.min(width - 40, goal.x + goal.w + 15);
+                let barY = goal.y + 50;
+                let barW = 20;
+                let barH = goal.h - 100;
+                
+                // Translucent container
+                ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                ctx.fillRect(barX, barY, barW, barH);
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(barX, barY, barW, barH);
+                
+                // Dynamic gradient fill (green -> yellow -> red)
+                let grad = ctx.createLinearGradient(barX, barY + barH, barX, barY);
+                grad.addColorStop(0, '#2b7a0b'); // Green (Low)
+                grad.addColorStop(0.5, '#ffcc00'); // Yellow (Med)
+                grad.addColorStop(1, '#e63946'); // Red (Max)
+                ctx.fillStyle = grad;
+                
+                let fillH = barH * (kickPower / 100);
+                ctx.fillRect(barX, barY + barH - fillH, barW, fillH);
+                
+                // Indicator line
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(barX - 2, barY + barH - fillH);
+                ctx.lineTo(barX + barW + 2, barY + barH - fillH);
+                ctx.stroke();
+                
+                // Label with max power pulsing effect
+                let pulse = 1 + Math.sin(new Date().getTime() * 0.015) * 0.1;
+                ctx.fillStyle = (kickPower > 90 && Math.floor(new Date().getTime() / 100) % 2 === 0) ? '#ffcc00' : '#fff';
+                ctx.font = '10px "Press Start 2P", monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText("POWER", barX + barW / 2, barY - 15);
+                
+                // Percentage
+                ctx.fillStyle = '#fff';
+                ctx.font = '8px "Press Start 2P", monospace';
+                ctx.fillText(Math.round(kickPower) + "%", barX + barW / 2, barY + barH + 20);
+            }
+
+            // Special Hold banner and instruction overlays
+            if (state === 'special_hold') {
+                // Banner background at top
+                let bannerW = Math.min(width * 0.9, 650);
+                let bannerH = 50;
+                let bannerX = width / 2 - bannerW / 2;
+                let bannerY = height * 0.08;
+
+                // Drew a beautiful premium retro style dark-translucent banner with red border
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+                ctx.fillRect(bannerX, bannerY, bannerW, bannerH);
+                ctx.strokeStyle = '#e63946'; // Red border
+                ctx.lineWidth = 3;
+                ctx.strokeRect(bannerX, bannerY, bannerW, bannerH);
+
+                // Add yellow-bordered accents on the sides of the banner
+                ctx.fillStyle = '#ffcc00'; // Yellow accent
+                ctx.fillRect(bannerX + 5, bannerY + 5, 6, bannerH - 10);
+                ctx.fillRect(bannerX + bannerW - 11, bannerY + 5, 6, bannerH - 10);
+
+                // Title Text
+                ctx.fillStyle = '#ffcc00'; // Vibrant retro yellow
+                ctx.font = '10px "Press Start 2P", monospace';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                let title = getSpecialMoveText();
+                ctx.fillText(title, width / 2, bannerY + bannerH / 2);
+                ctx.textBaseline = 'alphabetic'; // Restore baseline
+
+                // Pulsing footer continue prompt
+                let pulse = Math.sin(new Date().getTime() * 0.007) * 0.4 + 0.6;
+                ctx.fillStyle = `rgba(255, 255, 255, ${pulse})`;
+                ctx.font = '12px "Press Start 2P", monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText("CLICK TO CONTINUE...", width / 2, height * 0.93);
+            }
+        }
+
+        let lastTime = 0;
+        function loop(timestamp) {
+            if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                calculateLayout();
+                if (state !== 'shooting' && state !== 'result' && state !== 'last_result') resetPositions();
+            }
+            if (!lastTime) lastTime = timestamp;
+            let deltaTime = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
+
+            update(deltaTime);
+            draw();
+            requestAnimationFrame(loop);
+        }
+        requestAnimationFrame(loop);
+    </script>
+</body>
+</html>

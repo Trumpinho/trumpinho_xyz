@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>$TRUMPINHO - Make Football Great Again</title>
+    <title>$TRUMPINHO - Draft 5 (V1: Falling Coins)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         * { box-sizing: border-box; }
         body { background: radial-gradient(circle at top, #4b6f93 0%, #1d3557 100%); background-attachment: fixed; min-height: 100vh; color: #fff; font-family: 'Press Start 2P', monospace; text-align: center; margin: 0; overflow-x: hidden; padding-bottom: 60px; position: relative; }
+        .fake-news-ticker { background: #e63946; color: #fff; padding: 12px 10px; font-size: 10px; font-weight: bold; border-bottom: 4px solid #000; font-family: 'Press Start 2P', monospace; display: flex; align-items: center; position: fixed; top: 0; width: 100%; z-index: 101; }
+        .ticker-badge { background: #ffcc00; color: #000; padding: 6px 16px; z-index: 10; border: 3px solid #000; border-radius: 6px; box-shadow: 3px 3px 0 #000; font-weight: bold; margin-right: 15px; letter-spacing: 1px; flex-shrink: 0; }
         
         .main-stage { padding: 120px 20px 40px 20px; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 2;}
         
@@ -26,7 +28,6 @@
         .main-img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; display: block; }
         
         .glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 300px; background: #ffcc00; filter: blur(60px); opacity: 0.6; z-index: 0; animation: pulse 2s infinite alternate; pointer-events: none;}
-        @keyframes pulse { 0% { opacity: 0.4; } 100% { opacity: 0.8; } }
         
         /* Fixed height for text section to prevent jumping */
         .token-info { margin-top: 20px; transition: 0.3s; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;}
@@ -34,7 +35,7 @@
         .token-ca { font-size: 16px; color: #fff; background: rgba(0,0,0,0.5); padding: 12px 24px; border: 2px dashed #fff; word-break: break-all; transition: opacity 0.3s; opacity: 1; margin: 0;}
         
         /* When hovering the container, change text */
-        .main-character-container:hover ~ .token-info .token-name { content: "THE ONLY GOAT"; color: #fff; }
+        .main-character-container:hover ~ .token-info .token-name { content: "THE ONLY GOAT"; /* fallback */ color: #fff; }
         .main-character-container:hover ~ .token-info .token-ca { opacity: 0; pointer-events: none; }
 
         /* Widget Row */
@@ -44,47 +45,64 @@
         .widget-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 1400px; margin: 0 auto; padding: 20px; position: relative; z-index: 2;}
         .widget { background: rgba(29, 53, 87, 0.9); border: 4px solid #ffcc00; padding: 20px; width: 320px; text-align: left; border-radius: 10px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
         .widget h3 { color: #e63946; font-size: 16px; margin-bottom: 15px; text-shadow: 2px 2px #000; }
+        
+        .sound-btn { display: block; width: 100%; margin: 5px 0; padding: 10px; background: #fff; color: #1d3557; border: 2px solid #1d3557; font-family: inherit; font-size: 8px; cursor: pointer; transition: 0.2s; }
+        .sound-btn:hover { background: #e63946; color: #fff; }
+        .leader { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 10px; border-bottom: 1px solid #4b6f93; padding-bottom: 5px; }
 
         /* Particle System */
         .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: hidden; }
         .particle { position: absolute; width: 68px; height: auto; image-rendering: pixelated; animation: fall linear infinite; }
         @keyframes fall { 0% { transform: translateY(-100px) rotate(0deg); opacity: 0.8; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
+        @keyframes wave { 0%, 100% { height: 8px; } 50% { height: 28px; } }
+        .wave-bar { height: 8px; }
 
-        .fake-news-ticker { background: #e63946; color: #fff; padding: 12px 10px; font-size: 10px; font-weight: bold; border-bottom: 4px solid #000; font-family: 'Press Start 2P', monospace; display: flex; align-items: center; position: fixed; top: 0; width: 100%; z-index: 101; }
-        .ticker-badge { background: #ffcc00; color: #000; padding: 6px 16px; z-index: 10; border: 3px solid #000; border-radius: 6px; box-shadow: 3px 3px 0 #000; font-weight: bold; margin-right: 15px; letter-spacing: 1px; flex-shrink: 0; }
+        .penalty-game-container {
+            flex: 1;
+            aspect-ratio: 16/9;
+            max-height: 480px;
+        }
 
         /* Mobile Responsiveness */
-        @media (max-width: 768px) {
+        @media (max-width: 950px) {
+            .penalty-layout { flex-direction: column; }
+            .penalty-menu { flex: auto; width: 100%; margin-bottom: 20px; }
+            .penalty-game-container {
+                flex: none;
+                width: 100%;
+                margin: 0 auto;
+            }
             .token-name { font-size: 24px; }
             .token-ca { font-size: 10px; padding: 8px 12px; }
             .main-character-container { width: 250px; height: 250px; }
             .widget { width: 100%; max-width: 100%; }
             .nav-links { flex-direction: column; padding: 0 20px; }
             .nav-links a { font-size: 14px; text-align: center; }
-            .main-stage { padding: 100px 10px 40px 10px; }
             .fake-news-ticker { padding: 8px 5px; font-size: 8px; }
             .ticker-badge { padding: 4px 8px; border: 2px solid #000; box-shadow: 2px 2px 0 #000; margin-right: 8px; font-size: 8px; }
+            .main-stage { padding: 100px 10px 40px 10px; }
         }
-    </style>
-    <script>
-        function imgError(image) {
-            const filename = image.src.substring(image.src.lastIndexOf('/') + 1);
-            if (filename === 'idle.png') {
-                image.src = 'assets/sprites/idle.png';
-            } else if (filename === 'trumpinho_trophy.jpg') {
-                image.src = 'assets/trumpinho_trophy.jpg';
-            } else if (filename === 'banner_cropped.png') {
-                image.src = 'assets/banner_cropped.png';
+
+        @media (max-width: 950px) and (orientation: portrait) {
+            .penalty-game-container {
+                max-width: 480px;
             }
         }
-    </script>
+
+        @media (max-width: 950px) and (orientation: landscape) {
+            .penalty-game-container {
+                max-width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Fake News Ticker -->
     <div class="fake-news-ticker">
         <span class="ticker-badge">NO FAKE NEWS:</span>
         <marquee scrollamount="5" style="padding-top: 4px;">
-            "Sleepy Joe claims he can play 90 minutes. FALSE." • "Macron asks referee for a timeout to fix his hair. SAD." • "Brazil spotted practicing dives instead of penalties." • "VAR is a witch hunt against me and the best country in the world, United States of America." • "Crooked Hillary spotted trying to delete referee emails. UNBELIEVABLE." • "Corrupt FIFA president Infantino begged me for soccer lessons. Very needy." • "Fake news claims Trumpinho cannot score from 50 yards. I scored three times in five seconds, believe me."
+            "Sleepy Joe claims he can play 90 minutes. FALSE." • "Macron asks referee for a timeout to fix his hair. SAD." • "Brazil spotted practicing dives instead of penalties." • "VAR is a witch hunt against me and the best country in the world, United States of America." • "Crooked Hillary spotted trying to delete referee emails. UNBELIEVABLE." • "Corrupt FIFA president Infantino begged me for soccer lessons. Very needy." • "Fake news claims Trumpinho cannot score from 50 yards. I scored three times in five seconds, believe me." • "Keir Starmer wants to tax the penalty box to fund the midfield. A disaster." • "Kamala Harris was asked about her defensive strategy and she just started laughing. Zero clean sheets." • "Justin Trudeau wears fancy socks but has zero tackle power. Very soft defender." • "Macron tried to reform the offside rule to make everyone work longer. The players went on strike." • "My opponent's goalie has hands so small he cannot even hold a corner kick. Sad." • "Elon Musk wants to replace referees with AI bots. The bots immediately gave him a red card." • "Milei wants to privatize the corner flags and play with a chainsaw. The fans love it."
         </marquee>
     </div>
 
@@ -92,7 +110,7 @@
 
     <div class="main-stage">
         <div class="banner-container">
-            <img src="banner_cropped.png" class="banner" onerror="imgError(this)">
+            <img src="assets/banner_cropped.png" class="banner">
         </div>
 
         <div style="position: relative; display: inline-flex; justify-content: center; align-items: center;">
@@ -102,10 +120,10 @@
                  onmouseout="document.getElementById('main-title').innerText='$TRUMPINHO';">
                 <div class="flip-inner">
                     <div class="flip-front">
-                        <img src="idle.png" class="main-img" onerror="imgError(this)">
+                        <img src="assets/sprites/idle.png" class="main-img">
                     </div>
                     <div class="flip-back">
-                        <img src="trumpinho_trophy.jpg" class="main-img" onerror="imgError(this)">
+                        <img src="assets/trumpinho_trophy.jpg" class="main-img">
                     </div>
                 </div>
             </div>
@@ -113,57 +131,585 @@
         
         <div class="token-info">
             <h1 class="token-name" id="main-title">$TRUMPINHO</h1>
-            <div class="token-ca" id="ca-box">CA: TRUMP...COMING SOON...PUMP</div>
+            <button class="sound-btn" onclick="playQuote36()" style="margin: 25px auto 30px auto; padding: 12px 24px; font-size: 14px; max-width: 360px; background: #ffcc00; color: #000; border: 3px solid #000; box-shadow: 4px 4px 0 #000; font-weight: bold; border-radius: 6px; text-shadow: none;">
+                LISTEN TO THE GOAT
+            </button>
+            <div class="token-ca" id="ca-box">CA: AejysLaeoF28aKsJDqcNhdifH9tVrUX9vmC6eZr9pump</div>
         </div>
         
         <div class="nav-links" style="margin-top: 30px;">
+            <a href="https://pump.fun/coin/AejysLaeoF28aKsJDqcNhdifH9tVrUX9vmC6eZr9pump" target="_blank">BUY ON PUMP.FUN</a>
             <a href="https://x.com/trumpinho_xyz" target="_blank">TWITTER</a>
+        </div>
+    </div>
+
+    <div class="widget-row">
+
+        <!-- MATCH DAY PREDICTION HUB -->
+        <div class="widget" id="match-day-hub" style="background: #1d3557; width: 100%; flex: 1 1 100%; max-width: 1200px; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; margin: 0 auto 40px auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; font-size: 18px; color: #ffcc00;">MATCH DAY PREDICTION HUB</h3>
+                <div style="color: #e63946; font-size: 14px; animation: blink 1s infinite; font-weight: bold;">● LIVE UPDATES</div>
+            </div>
+
+                                    <!-- Games Container -->
+            <div id="games-container" style="display: none; flex-direction: column; gap: 20px;">
+                
+                <!-- Date Header -->
+                <div style="display: flex; flex-direction: column; gap: 15px; padding-bottom: 15px; border-bottom: 2px dashed #4b6f93; margin-top: 10px;">
+                    <div id="match-date-header" style="font-size: 16px; color: #ffcc00; font-weight: bold; text-align: center;">
+                        THU, JUN 11 - GROUP STAGE
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <button class="sound-btn" onclick="prevDay()" style="background: #222; border: 2px solid #4b6f93; color: #ffcc00; font-family: inherit; font-size: 16px; cursor: pointer; padding: 10px 20px; margin: 0; width: auto; font-weight: bold;">◀ PREV</button>
+                        <button class="sound-btn" onclick="nextDay()" style="background: #222; border: 2px solid #4b6f93; color: #ffcc00; font-family: inherit; font-size: 16px; cursor: pointer; padding: 10px 20px; margin: 0; width: auto; font-weight: bold;">NEXT ▶</button>
+                    </div>
+                </div>
+                
+                <div id="games-list" style="display: flex; flex-direction: column; gap: 20px;">
+                    <!-- Javascript will render matches here -->
+                </div>
+
+            </div>
+
+            <!-- Teaser Container -->
+            <div id="prediction-teaser" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; border: 3px dashed #ffcc00; background: rgba(0,0,0,0.4); border-radius: 8px; margin-top: 10px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+                <img src="trump_shush.png" style="width: 150px; height: 150px; image-rendering: pixelated; margin-bottom: 20px; border: 4px solid #ffcc00; border-radius: 8px; box-shadow: 4px 4px 0 #000;">
+                <div style="font-size: 16px; color: #ffcc00; font-weight: bold; margin-bottom: 20px; text-shadow: 2px 2px #000; animation: blink 1.5s infinite; line-height: 1.5;">
+                    COMING BEFORE THE FIRST WORLD CUP MATCH ON 11TH OF JUNE
+                </div>
+                <p id="prediction-teaser-text" style="font-size: 14px; line-height: 1.8; color: #fff; margin: 0; max-width: 900px; text-shadow: 1px 1px #000;">
+                    Keep it quiet, but this will be the best and most exclusive way to watch the World Cup 2026. I am preparing the absolute best, most precise football comments and predictions ever created. Nobody knows football like me, believe me.
+                </p>
+            </div>
+        </div>
+<!-- THE ULTIMATE PENALTY ARCADE -->
+        <div class="widget" style="width: 100%; flex: 1 1 100%; max-width: 1200px; border-color: #ffcc00; padding: 20px; box-sizing: border-box; margin: 0 auto 40px auto;">
+            <h3 style="color: #ffcc00; text-align: center; font-size: 24px; margin-bottom: 20px;">THE PENALTY SHOOTOUT</h3>
+            
+            <div class="penalty-layout" style="display: flex; gap: 20px; align-items: stretch;">
+                
+                <!-- Left Menu -->
+                <div class="penalty-menu" style="flex: 0 0 250px; background: #000; border: 4px solid #4b6f93; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 15px;">
+                    <h4 style="color: #fff; text-align: center; margin: 0 0 10px 0; border-bottom: 2px dashed #4b6f93; padding-bottom: 10px;">GAME SETTINGS</h4>
+                    
+                    <div style="margin-top: 15px;">
+                        <label style="color: #ffcc00; font-size: 14px; display: block; margin-bottom: 10px;">OPPONENT:</label>
+                        <select id="opponent-select" style="width: 100%; padding: 10px; background: #222; color: #fff; border: 2px solid #fff; font-family: inherit; font-size: 12px; cursor: pointer;">
+                            <option value="random">RANDOM LEADER</option>
+                            <option value="kim">KIM JONG UN</option>
+                            <option value="putin">VLADIMIR PUTIN</option>
+                            <option value="khamenei">ALI KHAMENEI</option>
+                            <option value="netanyahu">BENJAMIN NETANYAHU</option>
+                            <option value="macron">EMMANUEL MACRON</option>
+                            <option value="xi">XI JINPING</option>
+                            <option value="trudeau">JUSTIN TRUDEAU</option>
+                        </select>
+                    </div>
+
+                    <div style="border: 2px dashed #ffcc00; background: rgba(255, 204, 0, 0.05); padding: 12px; border-radius: 6px; font-size: 10px; line-height: 1.5; color: #fff; text-align: left; margin-top: 15px; margin-bottom: 15px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                        <span style="color: #ffcc00; font-weight: bold; display: block; margin-bottom: 6px; text-align: center; font-size: 11px; text-shadow: 1px 1px 0 #000;">PRO TIPS BY TRUMPINHO:</span>
+                        "Listen, these goalies have a <span style='color: #ffcc00;'>yuge unseen reach</span>! Their physical save hitboxes are larger than their pixel bodies—very powerful reach, believe me! If you shoot too close, their reach will save it! So think about it when you shoot!"
+                    </div>
+
+                    <button class="sound-btn" onclick="const ticker = document.querySelector('.fake-news-ticker'); if (ticker) ticker.style.display = 'none'; document.getElementById('game-frame').src='game_penalty.html?opponent=' + document.getElementById('opponent-select').value + '&cb=' + new Date().getTime();" style="background: #e63946; color: #fff; margin-top: auto; padding: 15px; font-size: 16px;">START MATCH</button>
+                </div>
+
+                <!-- Right Game Frame -->
+                <div class="penalty-game-container" style="background: #000; border: 4px solid #fff; border-radius: 8px; overflow: hidden; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
+                    <iframe id="game-frame" src="game_penalty.html?v=2.3&init=true" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div>
+
+            </div>
+        </div>
+
+<!-- Expanded Meme Generator -->
+        <div class="widget" style="width: 100%; max-width: 900px; grid-column: 1 / -1; margin: 0 auto 40px auto; border-color: #ffcc00;">
+            <h3 style="text-align: center; font-size: 18px; color: #ffcc00;">ULTIMATE MEME GENERATOR</h3>
+            <p style="font-size: 10px; margin-bottom: 20px; text-align: center;">Optimal 16:9 sizing for X/Twitter. Generate, Download, and Post!</p>
+            
+            <div id="canvas-1" style="width: 100%; aspect-ratio: 16/9; background: #4b6f93; border: 4px solid #fff; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5); margin-bottom: 20px;">
+                <img id="meme-img-1" src="assets/meme_generator_images/1.png" style="max-height: 85%; max-width: 85%; image-rendering: pixelated; object-fit: contain;">
+                <div id="text-top-1" style="position: absolute; top: 15px; width: 90%; text-align: center; color: white; font-family: 'Press Start 2P', monospace; font-size: 20px; font-weight: bold; text-shadow: 4px 4px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; text-transform: uppercase; word-wrap: break-word; line-height: 1.4;"></div>
+                <div id="text-bottom-1" style="position: absolute; bottom: 15px; width: 90%; text-align: center; color: white; font-family: 'Press Start 2P', monospace; font-size: 20px; font-weight: bold; text-shadow: 4px 4px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; text-transform: uppercase; word-wrap: break-word; line-height: 1.4;"></div>
+            </div>
+
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div style="flex: 1.5; min-width: 250px;">
+                    <div style="font-size: 10px; color: #ffcc00; margin-bottom: 10px;">LEGEND SELECT:</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 150px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px;">
+                        <img src="assets/meme_generator_images/1.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/1.png'">
+                        <img src="assets/meme_generator_images/2.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/2.png'">
+                        <img src="assets/meme_generator_images/4.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/4.png'">
+                        <img src="assets/meme_generator_images/5.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/5.png'">
+                        <img src="assets/meme_generator_images/6.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/6.png'">
+                        <img src="assets/meme_generator_images/7.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/7.png'">
+                        <img src="assets/meme_generator_images/8.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/8.png'">
+                        <img src="assets/meme_generator_images/9.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/9.png'">
+                        <img src="assets/meme_generator_images/10.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/10.png'">
+                        <img src="assets/meme_generator_images/11.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/11.png'">
+                    </div>
+                </div>
+                <div style="flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 10px;">
+                    <div style="font-size: 10px; color: #ffcc00;">CUSTOMIZE:</div>
+                    <input type="text" placeholder="TOP TEXT..." style="width: 100%; padding: 10px; font-family: inherit; font-size: 10px; background: #000; color: #fff; border: 2px solid #ffcc00;" oninput="document.getElementById('text-top-1').innerText = this.value">
+                    <input type="text" placeholder="BOTTOM TEXT..." style="width: 100%; padding: 10px; font-family: inherit; font-size: 10px; background: #000; color: #fff; border: 2px solid #ffcc00;" oninput="document.getElementById('text-bottom-1').innerText = this.value">
+                    <div style="display: flex; gap: 5px;">
+                        <input type="color" value="#4b6f93" onchange="document.getElementById('canvas-1').style.background=this.value;" style="flex: 1; height: 35px; border: 2px solid #fff; cursor: pointer;">
+                        <button class="sound-btn" style="flex: 1; margin: 0; font-size: 8px;" onclick="document.getElementById('canvas-1').style.background='transparent';">TRANSPARENT</button>
+                    </div>
+                    <button class="sound-btn" onclick="generateAndTweet('canvas-1')" style="background: #e63946; color: #fff; padding: 12px; font-size: 10px; border: 2px solid #fff; box-shadow: 4px 4px 0 #000; font-weight: bold;">DOWNLOAD & TWEET</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- The Roast Podium (Channel Surfer) -->
+        <div class="widget" id="roast-podium" style="width: 100%; max-width: 900px; grid-column: 1 / -1; margin: 0 auto 40px auto; display: none; flex-direction: column; padding: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="margin: 0; font-size: 18px; color: #ffcc00;">THE ROAST PODIUM</h3>
+            </div>
+
+            <!-- TV Screen -->
+            <div style="background: #000; border: 4px solid #666; border-radius: 12px; padding: 15px; margin-bottom: 15px; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; flex: 1; box-shadow: inset 0 0 20px #000, 0 0 10px #000;">
+                <!-- Scanline effect -->
+                <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px); pointer-events:none; z-index: 2;"></div>
+                
+                <!-- Channel Info -->
+                <div id="channel-name" style="position: absolute; top: 10px; left: 10px; color: #00ff00; font-size: 10px; z-index: 1;">CH 1: SLEEPY JOE</div>
+                
+                <p id="roast-quote" style="font-size: 12px; line-height: 1.8; text-align: center; color: #ffcc00; margin: 0; position: relative; z-index:1; padding: 25px 10px 0 10px; min-height: 50px;">"Click PLAY to hear this channel!"</p>
+                
+                <!-- Talking Trumpinho / Equalizer -->
+                <div id="roast-visual" style="display: none; margin-top: 15px; z-index: 1;">
+                    <img src="trump_shush.png" style="width: 50px; height: 50px; animation: bounce 0.5s infinite; image-rendering: pixelated;">
+                </div>
+            </div>
+
+            <!-- Controls (Channel Surfer) -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: #222; padding: 10px; border-radius: 6px; border: 2px solid #4b6f93;">
+                <div style="display: flex; gap: 5px;">
+                    <button class="sound-btn" onclick="prevChannel()" style="background: #333; color: #fff; padding: 12px; font-size: 12px; border: 2px solid #555; margin: 0;">▼ CH</button>
+                    <button class="sound-btn" onclick="nextChannel()" style="background: #333; color: #fff; padding: 12px; font-size: 12px; border: 2px solid #555; margin: 0;">▲ CH</button>
+                </div>
+                <button id="roast-play-btn" class="sound-btn" onclick="playCurrentChannel()" style="background: #ffcc00; color: #000; font-weight: bold; padding: 12px 20px; font-size: 12px; border: 2px solid #000; box-shadow: 2px 2px 0 #000; transition: 0.15s; margin: 0;">▶ PLAY</button>
+            </div>
+            
+            <button class="sound-btn" onclick="shareRoastToX()" style="width: 100%; background: #000; color: #fff; font-weight: bold; padding: 15px; font-size: 12px; border: 3px solid #ffcc00; box-shadow: 4px 4px 0 #ffcc00; transition: 0.15s; margin: 0; margin-top: auto;">SHARE THIS ROAST</button>
+
+            <audio id="roast-audio" src=""></audio>
         </div>
 
         <!-- The Updated Roadmap -->
-        <div id="roadmap" class="widget" style="width: 100%; max-width: 900px; grid-column: 1 / -1; margin: 40px auto 20px auto; border-color: #e63946; text-align: left;">
+        <div id="roadmap" class="widget" style="width: 100%; max-width: 900px; grid-column: 1 / -1; margin: 0 auto 40px auto; border-color: #e63946; text-align: left;">
             <h3 style="color: #e63946; text-align: center; font-size: 24px;">ROADMAP: THE TACTICS BOARD</h3>
             <div style="font-size: 16px; line-height: 2.5; color: #fff; margin-bottom: 25px; text-align: center; text-shadow: 2px 2px #000;">
                 <div><span style="color: #ffcc00;">PHASE 1:</span> Launch $TRUMPINHO & Fire the SEC Referees</div>
                 <div><span style="color: #ffcc00;">PHASE 2:</span> DexScreener Trending & Win the Group Stage</div>
-                <div><span style="color: #ffcc00;">PHASE 3:</span> 100M Market Cap & The World Cup Victory</div>
+                <div><span style="color: #ffcc00;">PHASE 3:</span> 100M Market Cap & The World Cup Final</div>
             </div>
             <div style="background: #000; padding: 25px; border: 2px dashed #ffcc00; text-align: center; border-radius: 8px;">
                 <p style="font-size: 16px; color: #ffcc00; margin: 0; line-height: 1.8;">
-                    "Listen, $TRUMPINHO is already the winner, nobody can compete with me. Just hope you are early, because beautiful, tremendous gains are going to happen here. Believe me, we are making football great again."
+                    "Listen, $TRUMPINHO is already the winner, nobody can compete with me! <br><br>Just hope you are early, because beautiful, tremendous gains are going to happen here. Believe me, we are making football great again!"
                 </p>
             </div>
-        </div>
-
-        <!-- Big Yellow Teaser Text under Roadmap -->
-        <div style="width: 100%; max-width: 900px; text-align: center; margin: 30px auto 10px auto; padding: 10px; z-index: 2; position: relative;">
-            <p style="font-size: 18px; color: #ffcc00; line-height: 2.0; margin: 0; text-shadow: 3px 3px 0px #000; font-weight: bold;">
-                "Much more content and activities are coming. I hope you did not think this is all that Trumpinho can do. This is just a beginning, you doubters."
-            </p>
         </div>
     </div>
 
     <!-- Footer -->
-    <footer style="background: #0b1a2e; padding: 30px 20px; text-align: center; color: #4b6f93; font-size: 10px; line-height: 2.0; border-top: 4px solid #1d3557; margin-top: 20px; position: relative; z-index: 2;">
-        <p style="margin: 0; color: #fff;">© 2026 TRUMPINHO. All Rights Reserved.</p>
+    <footer style="background: #0b1a2e; padding: 30px 20px; text-align: center; color: #4b6f93; font-size: 10px; line-height: 2.0; border-top: 4px solid #1d3557; margin-top: 20px;">
+        <p style="margin: 0; margin-bottom: 10px; color: #fff;">© 2026 TRUMPINHO. All Rights Reserved.</p>
+        <p style="margin: 0;">Disclaimer: $TRUMPINHO is a meme coin created for entertainment purposes only. This is not financial advice. Do your own research. This project is not affiliated with any official organizations, real people, or political entities. Pure joy from football and the World Cup!</p>
     </footer>
 
     <!-- Scripts -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script>
+        
+        const matchData = [{"date": "Thursday, 11 June 2026", "games": [{"team1": "Mexico", "team2": "South Africa", "group": "Group A", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-mex-rsa-2026-06-11?r=cryptojanko"}, {"team1": "Korea Republic", "team2": "Czechia", "group": "Group A", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-kr-cze-2026-06-11?r=cryptojanko"}]}, {"date": "Friday, 12 June 2026", "games": [{"team1": "Canada", "team2": "Bosnia and Herzegovina", "group": "Group B", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-can-bih-2026-06-12?r=cryptojanko"}, {"team1": "USA", "team2": "Paraguay", "group": "Group D", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-usa-par-2026-06-12?r=cryptojanko"}]}, {"date": "Saturday, 13 June 2026", "games": [{"team1": "Haiti", "team2": "Scotland", "group": "Group C", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-hai-sco-2026-06-13?r=cryptojanko"}, {"team1": "Australia", "team2": "T\u00fcrkiye", "group": "Group D", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-aus-tur-2026-06-14?r=cryptojanko"}, {"team1": "Brazil", "team2": "Morocco", "group": "Group C", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-bra-mar-2026-06-13?r=cryptojanko"}, {"team1": "Qatar", "team2": "Switzerland", "group": "Group B", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-qat-che-2026-06-13?r=cryptojanko"}]}, {"date": "Sunday, 14 June 2026", "games": [{"team1": "C\u00f4te d'Ivoire", "team2": "Ecuador", "group": "Group E", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-civ-ecu-2026-06-14?r=cryptojanko"}, {"team1": "Germany", "team2": "Cura\u00e7ao", "group": "Group E", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-ger-kor-2026-06-14?r=cryptojanko"}, {"team1": "Netherlands", "team2": "Japan", "group": "Group F", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-nld-jpn-2026-06-14?r=cryptojanko"}, {"team1": "Sweden", "team2": "Tunisia", "group": "Group F", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-swe-tun-2026-06-14?r=cryptojanko"}]}, {"date": "Monday, 15 June 2026", "games": [{"team1": "Saudi Arabia", "team2": "Uruguay", "group": "Group H", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-ksa-ury-2026-06-15?r=cryptojanko"}, {"team1": "Spain", "team2": "Cabo Verde", "group": "Group H", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-esp-cvi-2026-06-15?r=cryptojanko"}, {"team1": "IR Iran", "team2": "New Zealand", "group": "Group G", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-irn-nzl-2026-06-15?r=cryptojanko"}, {"team1": "Belgium", "team2": "Egypt", "group": "Group G", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-bel-egy-2026-06-15?r=cryptojanko"}]}, {"date": "Tuesday, 16 June 2026", "games": [{"team1": "France", "team2": "Senegal", "group": "Group I", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-fra-sen-2026-06-16?r=cryptojanko"}, {"team1": "Iraq", "team2": "Norway", "group": "Group I", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-irq-nor-2026-06-16?r=cryptojanko"}, {"team1": "Argentina", "team2": "Algeria", "group": "Group J", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-arg-alg-2026-06-16?r=cryptojanko"}, {"team1": "Austria", "team2": "Jordan", "group": "Group J", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-aut-jor-2026-06-17?r=cryptojanko"}]}, {"date": "Wednesday, 17 June 2026", "games": [{"team1": "Ghana", "team2": "Panama", "group": "Group L", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-gha-pan-2026-06-17?r=cryptojanko"}, {"team1": "England", "team2": "Croatia", "group": "Group L", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-eng-hrv-2026-06-17?r=cryptojanko"}, {"team1": "Portugal", "team2": "Congo DR", "group": "Group K", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-prt-cdr-2026-06-17?r=cryptojanko"}, {"team1": "Uzbekistan", "team2": "Colombia", "group": "Group K", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-uzb-col-2026-06-17?r=cryptojanko"}]}, {"date": "Thursday, 18 June 2026", "games": [{"team1": "Czechia", "team2": "South Africa", "group": "Group A", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-cze-rsa-2026-06-18?r=cryptojanko"}, {"team1": "Switzerland", "team2": "Bosnia and Herzegovina", "group": "Group B", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-che-bih-2026-06-18?r=cryptojanko"}, {"team1": "Canada", "team2": "Qatar", "group": "Group B", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-can-qat-2026-06-18?r=cryptojanko"}, {"team1": "Mexico", "team2": "Korea Republic", "group": "Group A", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-mex-kr-2026-06-18?r=cryptojanko"}]}, {"date": "Friday, 19 June 2026", "games": [{"team1": "Brazil", "team2": "Haiti", "group": "Group C", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-bra-hai-2026-06-19?r=cryptojanko"}, {"team1": "Scotland", "team2": "Morocco", "group": "Group C", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-sco-mar-2026-06-19?r=cryptojanko"}, {"team1": "T\u00fcrkiye", "team2": "Paraguay", "group": "Group D", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-tur-par-2026-06-19?r=cryptojanko"}, {"team1": "USA", "team2": "Australia", "group": "Group D", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-usa-aus-2026-06-19?r=cryptojanko"}]}, {"date": "Saturday, 20 June 2026", "games": [{"team1": "Germany", "team2": "C\u00f4te d'Ivoire", "group": "Group E", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-ger-civ-2026-06-20?r=cryptojanko"}, {"team1": "Ecuador", "team2": "Cura\u00e7ao", "group": "Group E", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-ecu-kor-2026-06-20?r=cryptojanko"}, {"team1": "Netherlands", "team2": "Sweden", "group": "Group F", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-nld-swe-2026-06-20?r=cryptojanko"}, {"team1": "Tunisia", "team2": "Japan", "group": "Group F", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-tun-jpn-2026-06-21?r=cryptojanko"}]}, {"date": "Sunday, 21 June 2026", "games": [{"team1": "Uruguay", "team2": "Cabo Verde", "group": "Group H", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-ury-cvi-2026-06-21?r=cryptojanko"}, {"team1": "Spain", "team2": "Saudi Arabia", "group": "Group H", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-esp-ksa-2026-06-21?r=cryptojanko"}, {"team1": "Belgium", "team2": "IR Iran", "group": "Group G", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-bel-irn-2026-06-21?r=cryptojanko"}, {"team1": "New Zealand", "team2": "Egypt", "group": "Group G", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-nzl-egy-2026-06-21?r=cryptojanko"}]}, {"date": "Monday, 22 June 2026", "games": [{"team1": "Norway", "team2": "Senegal", "group": "Group I", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-nor-sen-2026-06-22?r=cryptojanko"}, {"team1": "France", "team2": "Iraq", "group": "Group I", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-fra-irq-2026-06-22?r=cryptojanko"}, {"team1": "Argentina", "team2": "Austria", "group": "Group J", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-arg-aut-2026-06-22?r=cryptojanko"}, {"team1": "Jordan", "team2": "Algeria", "group": "Group J", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-jor-alg-2026-06-22?r=cryptojanko"}]}, {"date": "Tuesday, 23 June 2026", "games": [{"team1": "England", "team2": "Ghana", "group": "Group L", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-eng-gha-2026-06-23?r=cryptojanko"}, {"team1": "Panama", "team2": "Croatia", "group": "Group L", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-pan-hrv-2026-06-23?r=cryptojanko"}, {"team1": "Portugal", "team2": "Uzbekistan", "group": "Group K", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-prt-uzb-2026-06-23?r=cryptojanko"}, {"team1": "Colombia", "team2": "Congo DR", "group": "Group K", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-col-cdr-2026-06-23?r=cryptojanko"}]}, {"date": "Wednesday, 24 June 2026", "games": [{"team1": "Scotland", "team2": "Brazil", "group": "Group C", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-sco-bra-2026-06-24?r=cryptojanko"}, {"team1": "Morocco", "team2": "Haiti", "group": "Group C", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-mar-hai-2026-06-24?r=cryptojanko"}, {"team1": "Switzerland", "team2": "Canada", "group": "Group B", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-che-can-2026-06-24?r=cryptojanko"}, {"team1": "Bosnia and Herzegovina", "team2": "Qatar", "group": "Group B", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-bih-qat-2026-06-24?r=cryptojanko"}, {"team1": "Czechia", "team2": "Mexico", "group": "Group A", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-cze-mex-2026-06-24?r=cryptojanko"}, {"team1": "South Africa", "team2": "Korea Republic", "group": "Group A", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-rsa-kr-2026-06-24?r=cryptojanko"}]}, {"date": "Thursday, 25 June 2026", "games": [{"team1": "Cura\u00e7ao", "team2": "C\u00f4te d'Ivoire", "group": "Group E", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-kor-civ-2026-06-25?r=cryptojanko"}, {"team1": "Ecuador", "team2": "Germany", "group": "Group E", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-ecu-ger-2026-06-25?r=cryptojanko"}, {"team1": "Japan", "team2": "Sweden", "group": "Group F", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-jpn-swe-2026-06-25?r=cryptojanko"}, {"team1": "Tunisia", "team2": "Netherlands", "group": "Group F", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-tun-nld-2026-06-25?r=cryptojanko"}, {"team1": "T\u00fcrkiye", "team2": "USA", "group": "Group D", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-tur-usa-2026-06-25?r=cryptojanko"}, {"team1": "Paraguay", "team2": "Australia", "group": "Group D", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-par-aus-2026-06-25?r=cryptojanko"}]}, {"date": "Friday, 26 June 2026", "games": [{"team1": "Norway", "team2": "France", "group": "Group I", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-nor-fra-2026-06-26?r=cryptojanko"}, {"team1": "Senegal", "team2": "Iraq", "group": "Group I", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-sen-irq-2026-06-26?r=cryptojanko"}, {"team1": "Egypt", "team2": "Iran", "group": "Group G", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-egy-irn-2026-06-26?r=cryptojanko"}, {"team1": "New Zealand", "team2": "Belgium", "group": "Group G", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-nzl-bel-2026-06-26?r=cryptojanko"}, {"team1": "Cabo Verde", "team2": "Saudi Arabia", "group": "Group H", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-cvi-ksa-2026-06-26?r=cryptojanko"}, {"team1": "Uruguay", "team2": "Spain", "group": "Group H", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-ury-esp-2026-06-26?r=cryptojanko"}]}, {"date": "Saturday, 27 June 2026", "games": [{"team1": "Panama", "team2": "England", "group": "Group L", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-pan-eng-2026-06-27?r=cryptojanko"}, {"team1": "Croatia", "team2": "Ghana", "group": "Group L", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-hrv-gha-2026-06-27?r=cryptojanko"}, {"team1": "Algeria", "team2": "Austria", "group": "Group J", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-alg-aut-2026-06-27?r=cryptojanko"}, {"team1": "Jordan", "team2": "Argentina", "group": "Group J", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-jor-arg-2026-06-27?r=cryptojanko"}, {"team1": "Colombia", "team2": "Portugal", "group": "Group K", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-col-prt-2026-06-27?r=cryptojanko"}, {"team1": "Congo DR", "team2": "Uzbekistan", "group": "Group K", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-cdr-uzb-2026-06-27?r=cryptojanko"}]}];
+        let currentMatchDayIndex = 0;
+        
+        function renderDay(index) {
+            if(index < 0) index = 0;
+            if(index >= matchData.length) index = matchData.length - 1;
+            currentMatchDayIndex = index;
+            
+            const dayData = matchData[index];
+            document.getElementById("match-date-header").innerText = dayData.date.toUpperCase();
+            
+            const container = document.getElementById("games-list");
+            container.innerHTML = "";
+            
+            if (index >= unlockedDays) {
+                container.innerHTML = `
+                    <div style="background: #1d3557; border: 2px solid #4b6f93; border-radius: 8px; padding: 40px 20px; text-align: center; display: flex; flex-direction: column; align-items: center;">
+                        <img src="assets/stern_trumpinho.png" alt="Stern Trumpinho" style="max-height: 250px; margin-bottom: 20px; image-rendering: pixelated;" onerror="this.style.display='none'">
+                        <p style="color: #ffcc00; font-size: 18px; font-weight: bold; line-height: 1.5; font-style: italic; max-width: 800px; margin: 0 auto;">
+                            Excuse me! Are you trying to look ahead? Very unfair! My genius predictions drop daily at 12:01 AM EST. <br><br>If you’re not Putin, Bibi, or Elon, you have to wait in line like everyone else. Sad but true! Patience, young padawan, patience!
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+            
+            dayData.games.forEach((game, i) => {
+                const matchId = `match_${index}_${i}`;
+                const flag1 = `assets/flags/${game.team1}.png`;
+                const flag2 = `assets/flags/${game.team2}.png`;
+                let predScore = "2 - 1";
+                let quote = "A very tough match. Believe me!";
+                
+                if(game.team1 === "USA") { predScore = "3 - 1"; quote = "We will build a wall in the midfield!"; }
+                else if(game.team1 === "Mexico" || game.team2 === "France") { predScore = "2 - 0"; quote = "Macron is very low energy. Sad!"; }
+                
+                container.innerHTML += `
+                    <div style="background: #020100; border: 2px solid #4b6f93; border-radius: 8px; padding: 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px;">
+                        <!-- Teams -->
+                        <div style="flex: 1.2; min-width: 180px; text-align: center;">
+                            <div style="display: flex; justify-content: center; align-items: flex-start; gap: 10px;">
+                                <div style="display: flex; flex-direction: column; align-items: center; width: 100px;">
+                                    <img src="${flag1}" alt="${game.team1}" style="width: 50px; height: 35px; image-rendering: pixelated; margin-bottom: 5px;" onerror="this.src='https://placehold.co/50x35/222/fff?text=${game.team1}'">
+                                    <span style="font-size: 14px; font-weight: bold; color: #fff; width: 100px; display: inline-block; white-space: normal; line-height: 1.2;">${game.team1}</span>
+                                </div>
+                                <div style="font-size: 14px; color: #888; font-weight: bold; margin-top: 10px;">VS</div>
+                                <div style="display: flex; flex-direction: column; align-items: center; width: 100px;">
+                                    <img src="${flag2}" alt="${game.team2}" style="width: 50px; height: 35px; image-rendering: pixelated; margin-bottom: 5px;" onerror="this.src='https://placehold.co/50x35/222/fff?text=${game.team2}'">
+                                    <span style="font-size: 14px; font-weight: bold; color: #fff; width: 100px; display: inline-block; white-space: normal; line-height: 1.2;">${game.team2}</span>
+                                </div>
+                            </div>
+                            <span style="font-size: 10px; color: #aaa; display: block; margin-top: 10px;">${game.group.toUpperCase()}</span>
+                        </div>
+                        
+                        <!-- Predictions & Real Score -->
+                        <div style="flex: 1.2; min-width: 160px; display: flex; gap: 10px;">
+                            <div style="flex: 1; background: #1d3557; padding: 15px 10px; border: 2px dashed #ffcc00; text-align: center; border-radius: 8px; display: flex; flex-direction: column; justify-content: center;">
+                                <span style="font-size: 10px; color: #ffcc00; display: block; margin-bottom: 5px; font-weight: bold;">TRUMPINHO SAYS:</span>
+                                <div style="font-size: 22px; font-weight: bold; color: #fff; white-space: nowrap;">${predScore}</div>
+                            </div>
+                            
+                            <div style="flex: 1; background: #1d3557; padding: 15px 10px; border: 2px solid #4b6f93; text-align: center; border-radius: 8px; display: flex; flex-direction: column; justify-content: center;">
+                                <span style="font-size: 10px; color: #aaa; display: block; margin-bottom: 5px; font-weight: bold;">REAL SCORE:</span>
+                                <div style="font-size: 22px; font-weight: bold; color: #888; white-space: nowrap;">-</div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div style="flex: 1; min-width: 150px; display: flex; flex-direction: column; gap: 8px;">
+                            <button class="sound-btn" onclick="playMatchAudio('${matchId}')" id="${matchId}-btn" style="background: #ffcc00; color: #000; font-weight: bold; padding: 12px; font-size: 12px; border: 2px solid #000; box-shadow: 2px 2px 0 #000; transition: 0.15s; margin: 0;">HEAR PREDICTION</button>
+                            <a href="${game.link}" target="_blank" style="text-decoration: none; text-align: center; background: #1d3557; color: #fff; font-weight: bold; padding: 12px; font-size: 12px; border: 2px solid #0088cc; box-shadow: 2px 2px 0 #0088cc; transition: 0.15s;">BET ON POLYMARKET</a>
+                            <button class="sound-btn" onclick="shareMatchPrediction('${game.team1} ${predScore} ${game.team2}', '${quote}', '${matchId}')" style="background: #000; color: #fff; font-weight: bold; padding: 12px; font-size: 12px; border: 2px solid #ffcc00; box-shadow: 2px 2px 0 #ffcc00; transition: 0.15s; margin: 0;">SHARE ON X</button>
+                        </div>
+                        <audio id="${matchId}-audio" src="assets/audio/${game.team1.toLowerCase().replace(/ /g, '_')}_vs_${game.team2.toLowerCase().replace(/ /g, '_')}.mp3" onerror="this.src='assets/audio/quote_1.mp3'"></audio>
+                    </div>
+                `;
+            });
+        }
+
+        
+        function calculateUnlockedDays() {
+            const nyTimeStr = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
+            const nowNy = new Date(nyTimeStr);
+            let unlocked = 0;
+            for (let i = 0; i < matchData.length; i++) {
+                const dateStr = matchData[i].date.replace(/^[A-Za-z]+,\s*/, '');
+                const matchDate = new Date(dateStr);
+                matchDate.setHours(0,0,0,0);
+                
+                const todayNy = new Date(nowNy.getFullYear(), nowNy.getMonth(), nowNy.getDate());
+                
+                if (todayNy >= matchDate) {
+                    unlocked = i + 1;
+                }
+            }
+            return Math.max(1, unlocked);
+        }
+        const unlockedDays = calculateUnlockedDays();
+
+        function nextDay() { 
+            if (currentMatchDayIndex < matchData.length - 1) {
+                renderDay(currentMatchDayIndex + 1); 
+            }
+        }
+        function prevDay() { 
+            if (currentMatchDayIndex > 0) {
+                renderDay(currentMatchDayIndex - 1); 
+            }
+        }
+
+
+        // Swipe support
+        let touchstartX = 0;
+        let touchendX = 0;
+        document.addEventListener("DOMContentLoaded", () => {
+            renderDay(0);
+            
+            const hubContainer = document.getElementById("match-day-hub");
+            if (hubContainer) {
+                hubContainer.addEventListener('touchstart', e => {
+                    touchstartX = e.changedTouches[0].screenX;
+                });
+                hubContainer.addEventListener('touchend', e => {
+                    touchendX = e.changedTouches[0].screenX;
+                    if (touchendX < touchstartX - 50) nextDay(); 
+                    if (touchendX > touchstartX + 50) prevDay(); 
+                });
+            }
+        });
+
+        function generateAndTweet(canvasId) {
+            const canvasArea = document.getElementById(canvasId);
+            html2canvas(canvasArea, { scale: 2, useCORS: true, backgroundColor: null }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'trumpinho-meme.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                const tweetText = encodeURIComponent(
+                    "Making Football Great Again \n\n" +
+                    "Join the ultimate World Cup meme coin\n\n" +
+                    "$TRUMPINHO @trumpinho_xyz\n" +
+                    "CA: TRUMP...PUMP\n\n" +
+                    "#FIFAWorldCup #WorldCup2026 #WeAre26\n\n" +
+                    "(Attach your downloaded meme)"
+                );
+                setTimeout(() => {
+                    window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
+                }, 500);
+            });
+        }
+
         // Particle System
         const container = document.getElementById('particles');
-        for(let i=0; i<8; i++) {
+        for(let i=0; i<5; i++) {
             let p = document.createElement('img');
-            p.src = 'falling_trophy_transparent.png';
-            p.onerror = function() {
-                this.src = 'assets/falling_trophy_transparent.png';
-            };
+            p.src = 'assets/falling_trophy_transparent.png';
             p.className = 'particle';
             p.style.left = Math.random() * 100 + 'vw';
             p.style.animationDuration = (Math.random() * 8 + 10) + 's';
             p.style.animationDelay = Math.random() * 5 + 's';
             container.appendChild(p);
         }
+
+        // Press Conference Logic
+        // Press Conference Logic (First 39 quotes mapped to audio)
+        const quotes = [
+            "We're going to build a great wall at the back, a big beautiful defense, and Brazil is going to pay for it!",
+            "I have the best headers. Everyone says so. Nobody headers like me, believe me.",
+            "The VAR is a total disaster. It’s a witch hunt, a total sham, and everyone knows it!",
+            "We are winning so much at football, you're going to get tired of winning.",
+            "Look at that striker on the other team. Low energy. Total loser. SAD!",
+            "I will be the greatest football president that God ever created.",
+            "The fake news media won't tell you, but our possession stats were huge.",
+            "I know more about the 4-4-2 formation than the generals do, believe me.",
+            "When Brazil sends their players, they’re not sending their best.",
+            "My volley in the 90th minute? It was a perfect volley. Read the transcript!",
+            "I've been a world-class striker for a long time. I know how to make the deal.",
+            "They said I couldn't score from 40 yards out. I did it, and it was beautiful.",
+            "Crooked Referee Hillary, she doesn't have the stamina to play 90 minutes.",
+            "We’re going to drain the locker room. Too many bad hombres in there.",
+            "Our midfield is fantastic. It’s huge. It’s tremendous.",
+            "I like goalkeepers who weren't scored on, okay?",
+            "The other team? They're all talk, no action. They're chokers!",
+            "It’s a disgrace what’s happening in the Champions League. A total disgrace.",
+            "I will sign an executive order: every child gets a free gold-plated football.",
+            "Sleepy Joe at left back? He’d fall asleep during the corner kick!",
+            "I saw Sleepy Joe trying to take a penalty. He wandered over to the corner flag and fell asleep!",
+            "Crazy Bernie Sanders wants to redistribute our goals! Not on my watch!",
+            "Rocket Man Kim Jong Un challenged us to a match. My strikers have much bigger rockets!",
+            "Little Emmanuel Macron doesn't want to get his kit dirty. He asked the referee for a time-out!",
+            "Vladimir Putin called me, he said 'Trumpinho, your slide tackles are the strongest in the world'.",
+            "Justin Trudeau is very weak on defense. He lets every opposing striker right across the border.",
+            "Crazy Nancy Pelosi tried to rip up my starting lineup!",
+            "Kamala Harris missed a wide-open net and just started laughing! A total disgrace.",
+            "Barack Obama played 90 minutes and never took a shot! All possession, no finishing.",
+            "AOC and the squad want to ban artificial turf! We'll play on concrete if we have to!",
+            "President Xi makes all the footballs, but I told him we are going to start scoring American-made goals!",
+            "Boris Johnson showed up to the match without shin pads. We dominated them, frankly.",
+            "Zelenskyy keeps calling, asking for more midfield support. Win your own 1-on-1s first!",
+            "Where are Crooked Hillary’s 33,000 missing emails? Probably hiding in the opponent's net!",
+            "Gavin Newsom spends more time on his hair gel than his set pieces.",
+            "Mitt Romney chokes like a dog in the playoffs! A total RINO!",
+            "Pocahontas Elizabeth Warren says she has a 'plan' for the midfield. Her plan is terrible!",
+            "That guy in Argentina, Milei, he brings a chainsaw to the pitch! The VAR gave him a red card.",
+            "Angela Merkel was a tough defender, but very low energy near the end."
+        ];
+
+        const roastChannels = [
+            { name: "CH 1: SLEEPY JOE", topic: "Sleepy Joe at left back? Sad!", audio: "quote_20.mp3" },
+            { name: "CH 2: VAR DISASTER", topic: "The VAR is a total witch hunt!", audio: "quote_3.mp3" },
+            { name: "CH 3: PUTIN'S RED CARD", topic: "Putin's slide tackles are strong.", audio: "quote_25.mp3" },
+            { name: "CH 4: LOW ENERGY MACRON", topic: "Macron asked for a timeout.", audio: "quote_24.mp3" },
+            { name: "CH 5: CROOKED HILLARY", topic: "Where are the missing emails?", audio: "quote_35.mp3" },
+            { name: "CH 6: CRAZY BERNIE", topic: "Redistributing our goals? No!", audio: "quote_22.mp3" },
+            { name: "CH 7: ROCKET MAN", topic: "My strikers have bigger rockets!", audio: "quote_23.mp3" },
+            { name: "CH 8: GAVIN NEWSOM", topic: "Too much hair gel on set pieces.", audio: "quote_36.mp3" },
+            { name: "CH 9: AOC'S TURF", topic: "We'll play on concrete if we have to!", audio: "quote_31.mp3" },
+            { name: "CH 10: JUSTIN TRUDEAU", topic: "Very weak on defense.", audio: "quote_26.mp3" }
+        ];
+        
+        let currentChannelIndex = 0;
+        let currentlyPlayingMatchAudio = null;
+
+        function updateChannelDisplay() {
+            const ch = roastChannels[currentChannelIndex];
+            document.getElementById('channel-name').innerText = ch.name;
+            
+            document.getElementById('roast-audio').src = 'assets/audio/' + ch.audio;
+            
+            document.getElementById('roast-audio').pause();
+            document.getElementById('roast-visual').style.display = 'none';
+            const btn = document.getElementById('roast-play-btn');
+            btn.innerText = '▶ PLAY';
+            btn.style.background = '#ffcc00';
+            btn.style.color = '#000';
+        }
+        
+        function prevChannel() {
+            currentChannelIndex = (currentChannelIndex - 1 + roastChannels.length) % roastChannels.length;
+            updateChannelDisplay();
+        }
+        
+        function nextChannel() {
+            currentChannelIndex = (currentChannelIndex + 1) % roastChannels.length;
+            updateChannelDisplay();
+        }
+        
+        function playCurrentChannel() {
+            // Stop match audio if playing
+            if(currentlyPlayingMatchAudio && !currentlyPlayingMatchAudio.paused) {
+                currentlyPlayingMatchAudio.pause();
+                const mBtn = document.getElementById(currentlyPlayingMatchAudio.id.replace('-audio', '-btn'));
+                if(mBtn) {
+                    mBtn.innerText = '▶ PLAY PREDICTION & ROAST';
+                    mBtn.style.background = '#ffcc00';
+                    mBtn.style.color = '#000';
+                }
+            }
+
+            const audio = document.getElementById('roast-audio');
+            const btn = document.getElementById('roast-play-btn');
+            const visual = document.getElementById('roast-visual');
+            
+            if (audio.paused) {
+                audio.play().catch(err => console.log(err));
+                btn.innerText = '⏹ STOP';
+                btn.style.background = '#e63946';
+                btn.style.color = '#fff';
+                visual.style.display = 'block';
+            } else {
+                audio.pause();
+                btn.innerText = '▶ PLAY';
+                btn.style.background = '#ffcc00';
+                btn.style.color = '#000';
+                visual.style.display = 'none';
+            }
+        }
+        
+        document.getElementById('roast-audio').addEventListener('ended', function() {
+            const btn = document.getElementById('roast-play-btn');
+            btn.innerText = '▶ PLAY';
+            btn.style.background = '#ffcc00';
+            btn.style.color = '#000';
+            document.getElementById('roast-visual').style.display = 'none';
+        });
+
+        function shareRoastToX() {
+            const ch = roastChannels[currentChannelIndex];
+            const audioUrl = "https://trumpinho.xyz/assets/audio/" + ch.audio;
+            const tweetText = encodeURIComponent(
+                "LEAKED AUDIO (" + ch.name + "):\n\n" +
+                `"Discussing: ${ch.topic}"\n\n` +
+                "LISTEN HERE: " + audioUrl + "\n\n" +
+                "Make Football Great Again \n" +
+                "$TRUMPINHO @trumpinho_xyz\n" +
+                "#FIFAWorldCup #WorldCup2026 #WeAre26"
+            );
+            window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
+        }
+
+        function playMatchAudio(matchId) {
+            const audio = document.getElementById(matchId + '-audio');
+            const btn = document.getElementById(matchId + '-btn');
+            
+            // Stop roast audio if playing
+            const roastAudio = document.getElementById('roast-audio');
+            if(!roastAudio.paused) {
+                playCurrentChannel(); // toggles it off
+            }
+
+            // Stop other match audio if playing
+            if (currentlyPlayingMatchAudio && currentlyPlayingMatchAudio !== audio && !currentlyPlayingMatchAudio.paused) {
+                currentlyPlayingMatchAudio.pause();
+                const oldBtn = document.getElementById(currentlyPlayingMatchAudio.id.replace('-audio', '-btn'));
+                if(oldBtn) {
+                    oldBtn.innerText = '▶ PLAY PREDICTION & ROAST';
+                    oldBtn.style.background = '#ffcc00';
+                    oldBtn.style.color = '#000';
+                }
+            }
+
+            if (audio.paused) {
+                audio.play().catch(err => console.log(err));
+                btn.innerText = '⏹ STOP AUDIO';
+                btn.style.background = '#e63946';
+                btn.style.color = '#fff';
+                currentlyPlayingMatchAudio = audio;
+            } else {
+                audio.pause();
+                btn.innerText = '▶ PLAY PREDICTION & ROAST';
+                btn.style.background = '#ffcc00';
+                btn.style.color = '#000';
+            }
+            
+            audio.onended = function() {
+                btn.innerText = '▶ PLAY PREDICTION & ROAST';
+                btn.style.background = '#ffcc00';
+                btn.style.color = '#000';
+            };
+        }
+
+        function shareMatchPrediction(scoreText, audioText, matchId) {
+            const audioUrl = "https://trumpinho.xyz/assets/audio/" + matchId + ".mp3";
+            const tweetText = encodeURIComponent(
+                "TRUMPINHO'S MATCH PREDICTION:\n\n" +
+                scoreText + "\n\n" +
+                '"' + audioText + '"\n\n' +
+                "LISTEN HERE: " + audioUrl + "\n\n" +
+                "Make Football Great Again \n" +
+                "$TRUMPINHO @trumpinho_xyz\n" +
+                "#FIFAWorldCup #WorldCup2026 #WeAre26"
+            );
+            window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
+        }
+
+        let topButtonAudio = null;
+
+        function playQuote36() {
+            if(currentlyPlayingMatchAudio && !currentlyPlayingMatchAudio.paused) {
+                currentlyPlayingMatchAudio.pause();
+                const mBtn = document.getElementById(currentlyPlayingMatchAudio.id.replace('-audio', '-btn'));
+                if(mBtn) {
+                    mBtn.innerText = '▶ PLAY PREDICTION & ROAST';
+                    mBtn.style.background = '#ffcc00';
+                    mBtn.style.color = '#000';
+                }
+            }
+            const roastAudio = document.getElementById('roast-audio');
+            if(roastAudio && !roastAudio.paused) {
+                playCurrentChannel();
+            }
+
+            if(topButtonAudio) {
+                topButtonAudio.pause();
+                topButtonAudio.currentTime = 0;
+            }
+
+            topButtonAudio = new Audio('assets/audio/quote_36.mp3');
+            topButtonAudio.play().catch(err => console.log(err));
+        }
+
+        // Initialize Channel Surfer on load
+        updateChannelDisplay();
     </script>
 </body>
 </html>
