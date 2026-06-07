@@ -187,7 +187,7 @@
             </div>
 
                                     <!-- Games Container -->
-            <div id="games-container" style="display: flex; flex-direction: column; gap: 20px;">
+            <div id="games-container" style="display: none; flex-direction: column; gap: 20px;">
                 
                 <!-- Date Header -->
                 <div style="display: flex; flex-direction: column; gap: 15px; padding-bottom: 15px; border-bottom: 2px dashed #4b6f93; margin-top: 10px;">
@@ -207,7 +207,7 @@
             </div>
 
             <!-- Teaser Container -->
-            <div id="prediction-teaser" style="display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; border: 3px dashed #ffcc00; background: rgba(0,0,0,0.4); border-radius: 8px; margin-top: 10px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+            <div id="prediction-teaser" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; border: 3px dashed #ffcc00; background: rgba(0,0,0,0.4); border-radius: 8px; margin-top: 10px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
                 <img src="trump_shush.png" style="width: 150px; height: 150px; image-rendering: pixelated; margin-bottom: 20px; border: 4px solid #ffcc00; border-radius: 8px; box-shadow: 4px 4px 0 #000;">
                 <div style="font-size: 16px; color: #ffcc00; font-weight: bold; margin-bottom: 20px; text-shadow: 2px 2px #000; animation: blink 1.5s infinite; line-height: 1.5;">
                     COMING BEFORE THE FIRST WORLD CUP MATCH ON 11TH OF JUNE
@@ -850,8 +850,7 @@
             // Render Meme Generator Legends dynamically
             const memeImages = [
                 '1.png', '2.png', '4.png', '5.png', '6.png', '7.png', '8.png', '9.png', '10.png', '11.png',
-                '12.png', '13.png', '14.png', '15.png', '16.png', '17.png', '18.png', '19.png', '20.png', '21.png',
-                '22.png', '23.png', '24.png', '25.png', '26.png', '27.png', '28.png', '29.png', '30.png'
+                '12.png', '13.png', '14.png', '15.png', '16.png', '17.png', '18.png', '19.png', '20.png', '21.png'
             ];
             const legendsList = document.getElementById('meme-legends-list');
             if (legendsList) {
