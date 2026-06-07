@@ -1,6 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+        window.onerror = function(msg, url, line, col, error) {
+            var div = document.createElement('div');
+            div.style.position = 'fixed';
+            div.style.top = '0';
+            div.style.left = '0';
+            div.style.width = '100%';
+            div.style.background = 'red';
+            div.style.color = 'white';
+            div.style.zIndex = '999999';
+            div.style.padding = '20px';
+            div.style.fontSize = '14px';
+            div.style.fontFamily = 'monospace';
+            div.innerText = 'ERROR: ' + msg + ' at ' + url + ':' + line + ':' + col;
+            document.body.appendChild(div);
+            return false;
+        };
+        window.addEventListener('unhandledrejection', function(event) {
+            var div = document.createElement('div');
+            div.style.position = 'fixed';
+            div.style.top = '50px';
+            div.style.left = '0';
+            div.style.width = '100%';
+            div.style.background = 'orange';
+            div.style.color = 'white';
+            div.style.zIndex = '999999';
+            div.style.padding = '20px';
+            div.style.fontSize = '14px';
+            div.style.fontFamily = 'monospace';
+            div.innerText = 'UNHANDLED REJECTION: ' + event.reason;
+            document.body.appendChild(div);
+        });
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>$TRUMPINHO - Official Website</title>
@@ -147,23 +180,23 @@
     <div class="widget-row">
 
         <!-- MATCH DAY PREDICTION HUB -->
-        <div class="widget" id="match-day-hub" style="background: #1d3557; width: 100%; flex: 1 1 100%; max-width: 1200px; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; margin: 0 auto 40px auto;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 style="margin: 0; font-size: 18px; color: #ffcc00;">MATCH DAY PREDICTION HUB</h3>
-                <div style="color: #e63946; font-size: 14px; animation: blink 1s infinite; font-weight: bold;">● LIVE UPDATES</div>
+        <div class="widget" id="match-day-hub" style="background: #1d3557; width: 100%; flex: 1 1 100%; max-width: 1200px; display: flex; flex-direction: column; padding: 25px; box-sizing: border-box; margin: 0 auto 40px auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h3 style="margin: 0; font-size: 22px; color: #ffcc00;">MATCH DAY PREDICTION HUB</h3>
+                <div style="color: #e63946; font-size: 16px; animation: blink 1s infinite; font-weight: bold;">● LIVE UPDATES</div>
             </div>
 
                                     <!-- Games Container -->
-            <div id="games-container" style="display: none; flex-direction: column; gap: 20px;">
+            <div id="games-container" style="display: flex; flex-direction: column; gap: 20px;">
                 
                 <!-- Date Header -->
                 <div style="display: flex; flex-direction: column; gap: 15px; padding-bottom: 15px; border-bottom: 2px dashed #4b6f93; margin-top: 10px;">
-                    <div id="match-date-header" style="font-size: 16px; color: #ffcc00; font-weight: bold; text-align: center;">
+                    <div id="match-date-header" style="font-size: 20px; color: #ffcc00; font-weight: bold; text-align: center;">
                         THU, JUN 11 - GROUP STAGE
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                        <button class="sound-btn" onclick="prevDay()" style="background: #222; border: 2px solid #4b6f93; color: #ffcc00; font-family: inherit; font-size: 16px; cursor: pointer; padding: 10px 20px; margin: 0; width: auto; font-weight: bold;">◀ PREV</button>
-                        <button class="sound-btn" onclick="nextDay()" style="background: #222; border: 2px solid #4b6f93; color: #ffcc00; font-family: inherit; font-size: 16px; cursor: pointer; padding: 10px 20px; margin: 0; width: auto; font-weight: bold;">NEXT ▶</button>
+                        <button class="sound-btn" onclick="prevDay()" style="background: #222; border: 2px solid #4b6f93; color: #ffcc00; font-family: inherit; font-size: 18px; cursor: pointer; padding: 12px 24px; margin: 0; width: auto; font-weight: bold;">◀ PREV</button>
+                        <button class="sound-btn" onclick="nextDay()" style="background: #222; border: 2px solid #4b6f93; color: #ffcc00; font-family: inherit; font-size: 18px; cursor: pointer; padding: 12px 24px; margin: 0; width: auto; font-weight: bold;">NEXT ▶</button>
                     </div>
                 </div>
                 
@@ -174,7 +207,7 @@
             </div>
 
             <!-- Teaser Container -->
-            <div id="prediction-teaser" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; border: 3px dashed #ffcc00; background: rgba(0,0,0,0.4); border-radius: 8px; margin-top: 10px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+            <div id="prediction-teaser" style="display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; border: 3px dashed #ffcc00; background: rgba(0,0,0,0.4); border-radius: 8px; margin-top: 10px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
                 <img src="trump_shush.png" style="width: 150px; height: 150px; image-rendering: pixelated; margin-bottom: 20px; border: 4px solid #ffcc00; border-radius: 8px; box-shadow: 4px 4px 0 #000;">
                 <div style="font-size: 16px; color: #ffcc00; font-weight: bold; margin-bottom: 20px; text-shadow: 2px 2px #000; animation: blink 1.5s infinite; line-height: 1.5;">
                     COMING BEFORE THE FIRST WORLD CUP MATCH ON 11TH OF JUNE
@@ -238,17 +271,8 @@
             <div style="display: flex; gap: 20px; flex-wrap: wrap;">
                 <div style="flex: 1.5; min-width: 250px;">
                     <div style="font-size: 10px; color: #ffcc00; margin-bottom: 10px;">LEGEND SELECT:</div>
-                    <div style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 150px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px;">
-                        <img src="assets/meme_generator_images/1.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/1.png'">
-                        <img src="assets/meme_generator_images/2.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/2.png'">
-                        <img src="assets/meme_generator_images/4.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/4.png'">
-                        <img src="assets/meme_generator_images/5.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/5.png'">
-                        <img src="assets/meme_generator_images/6.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/6.png'">
-                        <img src="assets/meme_generator_images/7.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/7.png'">
-                        <img src="assets/meme_generator_images/8.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/8.png'">
-                        <img src="assets/meme_generator_images/9.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/9.png'">
-                        <img src="assets/meme_generator_images/10.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/10.png'">
-                        <img src="assets/meme_generator_images/11.png" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" onmouseover="this.style.borderColor='#ffcc00'" onmouseout="this.style.borderColor='transparent'" onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/11.png'">
+                    <div id="meme-legends-list" style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 150px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px;">
+                        <!-- Rendered dynamically by JavaScript -->
                     </div>
                 </div>
                 <div style="flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 10px;">
@@ -327,15 +351,127 @@
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script>
         
-        const matchData = [{"date": "Thursday, 11 June 2026", "games": [{"team1": "Mexico", "team2": "South Africa", "group": "Group A", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-mex-rsa-2026-06-11?r=cryptojanko"}, {"team1": "Korea Republic", "team2": "Czechia", "group": "Group A", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-kr-cze-2026-06-11?r=cryptojanko"}]}, {"date": "Friday, 12 June 2026", "games": [{"team1": "Canada", "team2": "Bosnia and Herzegovina", "group": "Group B", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-can-bih-2026-06-12?r=cryptojanko"}, {"team1": "USA", "team2": "Paraguay", "group": "Group D", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-usa-par-2026-06-12?r=cryptojanko"}]}, {"date": "Saturday, 13 June 2026", "games": [{"team1": "Haiti", "team2": "Scotland", "group": "Group C", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-hai-sco-2026-06-13?r=cryptojanko"}, {"team1": "Australia", "team2": "T\u00fcrkiye", "group": "Group D", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-aus-tur-2026-06-14?r=cryptojanko"}, {"team1": "Brazil", "team2": "Morocco", "group": "Group C", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-bra-mar-2026-06-13?r=cryptojanko"}, {"team1": "Qatar", "team2": "Switzerland", "group": "Group B", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-qat-che-2026-06-13?r=cryptojanko"}]}, {"date": "Sunday, 14 June 2026", "games": [{"team1": "C\u00f4te d'Ivoire", "team2": "Ecuador", "group": "Group E", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-civ-ecu-2026-06-14?r=cryptojanko"}, {"team1": "Germany", "team2": "Cura\u00e7ao", "group": "Group E", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-ger-kor-2026-06-14?r=cryptojanko"}, {"team1": "Netherlands", "team2": "Japan", "group": "Group F", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-nld-jpn-2026-06-14?r=cryptojanko"}, {"team1": "Sweden", "team2": "Tunisia", "group": "Group F", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-swe-tun-2026-06-14?r=cryptojanko"}]}, {"date": "Monday, 15 June 2026", "games": [{"team1": "Saudi Arabia", "team2": "Uruguay", "group": "Group H", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-ksa-ury-2026-06-15?r=cryptojanko"}, {"team1": "Spain", "team2": "Cabo Verde", "group": "Group H", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-esp-cvi-2026-06-15?r=cryptojanko"}, {"team1": "IR Iran", "team2": "New Zealand", "group": "Group G", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-irn-nzl-2026-06-15?r=cryptojanko"}, {"team1": "Belgium", "team2": "Egypt", "group": "Group G", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-bel-egy-2026-06-15?r=cryptojanko"}]}, {"date": "Tuesday, 16 June 2026", "games": [{"team1": "France", "team2": "Senegal", "group": "Group I", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-fra-sen-2026-06-16?r=cryptojanko"}, {"team1": "Iraq", "team2": "Norway", "group": "Group I", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-irq-nor-2026-06-16?r=cryptojanko"}, {"team1": "Argentina", "team2": "Algeria", "group": "Group J", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-arg-alg-2026-06-16?r=cryptojanko"}, {"team1": "Austria", "team2": "Jordan", "group": "Group J", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-aut-jor-2026-06-17?r=cryptojanko"}]}, {"date": "Wednesday, 17 June 2026", "games": [{"team1": "Ghana", "team2": "Panama", "group": "Group L", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-gha-pan-2026-06-17?r=cryptojanko"}, {"team1": "England", "team2": "Croatia", "group": "Group L", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-eng-hrv-2026-06-17?r=cryptojanko"}, {"team1": "Portugal", "team2": "Congo DR", "group": "Group K", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-prt-cdr-2026-06-17?r=cryptojanko"}, {"team1": "Uzbekistan", "team2": "Colombia", "group": "Group K", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-uzb-col-2026-06-17?r=cryptojanko"}]}, {"date": "Thursday, 18 June 2026", "games": [{"team1": "Czechia", "team2": "South Africa", "group": "Group A", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-cze-rsa-2026-06-18?r=cryptojanko"}, {"team1": "Switzerland", "team2": "Bosnia and Herzegovina", "group": "Group B", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-che-bih-2026-06-18?r=cryptojanko"}, {"team1": "Canada", "team2": "Qatar", "group": "Group B", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-can-qat-2026-06-18?r=cryptojanko"}, {"team1": "Mexico", "team2": "Korea Republic", "group": "Group A", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-mex-kr-2026-06-18?r=cryptojanko"}]}, {"date": "Friday, 19 June 2026", "games": [{"team1": "Brazil", "team2": "Haiti", "group": "Group C", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-bra-hai-2026-06-19?r=cryptojanko"}, {"team1": "Scotland", "team2": "Morocco", "group": "Group C", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-sco-mar-2026-06-19?r=cryptojanko"}, {"team1": "T\u00fcrkiye", "team2": "Paraguay", "group": "Group D", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-tur-par-2026-06-19?r=cryptojanko"}, {"team1": "USA", "team2": "Australia", "group": "Group D", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-usa-aus-2026-06-19?r=cryptojanko"}]}, {"date": "Saturday, 20 June 2026", "games": [{"team1": "Germany", "team2": "C\u00f4te d'Ivoire", "group": "Group E", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-ger-civ-2026-06-20?r=cryptojanko"}, {"team1": "Ecuador", "team2": "Cura\u00e7ao", "group": "Group E", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-ecu-kor-2026-06-20?r=cryptojanko"}, {"team1": "Netherlands", "team2": "Sweden", "group": "Group F", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-nld-swe-2026-06-20?r=cryptojanko"}, {"team1": "Tunisia", "team2": "Japan", "group": "Group F", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-tun-jpn-2026-06-21?r=cryptojanko"}]}, {"date": "Sunday, 21 June 2026", "games": [{"team1": "Uruguay", "team2": "Cabo Verde", "group": "Group H", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-ury-cvi-2026-06-21?r=cryptojanko"}, {"team1": "Spain", "team2": "Saudi Arabia", "group": "Group H", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-esp-ksa-2026-06-21?r=cryptojanko"}, {"team1": "Belgium", "team2": "IR Iran", "group": "Group G", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-bel-irn-2026-06-21?r=cryptojanko"}, {"team1": "New Zealand", "team2": "Egypt", "group": "Group G", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-nzl-egy-2026-06-21?r=cryptojanko"}]}, {"date": "Monday, 22 June 2026", "games": [{"team1": "Norway", "team2": "Senegal", "group": "Group I", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-nor-sen-2026-06-22?r=cryptojanko"}, {"team1": "France", "team2": "Iraq", "group": "Group I", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-fra-irq-2026-06-22?r=cryptojanko"}, {"team1": "Argentina", "team2": "Austria", "group": "Group J", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-arg-aut-2026-06-22?r=cryptojanko"}, {"team1": "Jordan", "team2": "Algeria", "group": "Group J", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-jor-alg-2026-06-22?r=cryptojanko"}]}, {"date": "Tuesday, 23 June 2026", "games": [{"team1": "England", "team2": "Ghana", "group": "Group L", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-eng-gha-2026-06-23?r=cryptojanko"}, {"team1": "Panama", "team2": "Croatia", "group": "Group L", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-pan-hrv-2026-06-23?r=cryptojanko"}, {"team1": "Portugal", "team2": "Uzbekistan", "group": "Group K", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-prt-uzb-2026-06-23?r=cryptojanko"}, {"team1": "Colombia", "team2": "Congo DR", "group": "Group K", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-col-cdr-2026-06-23?r=cryptojanko"}]}, {"date": "Wednesday, 24 June 2026", "games": [{"team1": "Scotland", "team2": "Brazil", "group": "Group C", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-sco-bra-2026-06-24?r=cryptojanko"}, {"team1": "Morocco", "team2": "Haiti", "group": "Group C", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-mar-hai-2026-06-24?r=cryptojanko"}, {"team1": "Switzerland", "team2": "Canada", "group": "Group B", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-che-can-2026-06-24?r=cryptojanko"}, {"team1": "Bosnia and Herzegovina", "team2": "Qatar", "group": "Group B", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-bih-qat-2026-06-24?r=cryptojanko"}, {"team1": "Czechia", "team2": "Mexico", "group": "Group A", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-cze-mex-2026-06-24?r=cryptojanko"}, {"team1": "South Africa", "team2": "Korea Republic", "group": "Group A", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-rsa-kr-2026-06-24?r=cryptojanko"}]}, {"date": "Thursday, 25 June 2026", "games": [{"team1": "Cura\u00e7ao", "team2": "C\u00f4te d'Ivoire", "group": "Group E", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-kor-civ-2026-06-25?r=cryptojanko"}, {"team1": "Ecuador", "team2": "Germany", "group": "Group E", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-ecu-ger-2026-06-25?r=cryptojanko"}, {"team1": "Japan", "team2": "Sweden", "group": "Group F", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-jpn-swe-2026-06-25?r=cryptojanko"}, {"team1": "Tunisia", "team2": "Netherlands", "group": "Group F", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-tun-nld-2026-06-25?r=cryptojanko"}, {"team1": "T\u00fcrkiye", "team2": "USA", "group": "Group D", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-tur-usa-2026-06-25?r=cryptojanko"}, {"team1": "Paraguay", "team2": "Australia", "group": "Group D", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-par-aus-2026-06-25?r=cryptojanko"}]}, {"date": "Friday, 26 June 2026", "games": [{"team1": "Norway", "team2": "France", "group": "Group I", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-nor-fra-2026-06-26?r=cryptojanko"}, {"team1": "Senegal", "team2": "Iraq", "group": "Group I", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-sen-irq-2026-06-26?r=cryptojanko"}, {"team1": "Egypt", "team2": "Iran", "group": "Group G", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-egy-irn-2026-06-26?r=cryptojanko"}, {"team1": "New Zealand", "team2": "Belgium", "group": "Group G", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-nzl-bel-2026-06-26?r=cryptojanko"}, {"team1": "Cabo Verde", "team2": "Saudi Arabia", "group": "Group H", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-cvi-ksa-2026-06-26?r=cryptojanko"}, {"team1": "Uruguay", "team2": "Spain", "group": "Group H", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-ury-esp-2026-06-26?r=cryptojanko"}]}, {"date": "Saturday, 27 June 2026", "games": [{"team1": "Panama", "team2": "England", "group": "Group L", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-pan-eng-2026-06-27?r=cryptojanko"}, {"team1": "Croatia", "team2": "Ghana", "group": "Group L", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-hrv-gha-2026-06-27?r=cryptojanko"}, {"team1": "Algeria", "team2": "Austria", "group": "Group J", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-alg-aut-2026-06-27?r=cryptojanko"}, {"team1": "Jordan", "team2": "Argentina", "group": "Group J", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-jor-arg-2026-06-27?r=cryptojanko"}, {"team1": "Colombia", "team2": "Portugal", "group": "Group K", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-col-prt-2026-06-27?r=cryptojanko"}, {"team1": "Congo DR", "team2": "Uzbekistan", "group": "Group K", "link": "https://polymarket.com/sports/fifa-world-cup/fifwc-cdr-uzb-2026-06-27?r=cryptojanko"}]}];
+        const API_BASE = "https://hub.trumpinho.xyz";
+        let matchData = []; // populated dynamically
         let currentMatchDayIndex = 0;
-        
+        let activePollers = {};
+        let loadedCommentCounts = {}; // Track loaded comment counts to avoid refresh loops
+        let unlockedDays = 1;
+
+        async function loadMatches() {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+                const res = await fetch(`${API_BASE}/api/matches`, { signal: controller.signal });
+                const rawMatches = await res.json();
+                clearTimeout(timeoutId);
+                
+                // Group matches by date_str
+                const grouped = {};
+                rawMatches.forEach(m => {
+                    if (!grouped[m.date_str]) {
+                        grouped[m.date_str] = [];
+                    }
+                    grouped[m.date_str].push(m);
+                });
+                
+                matchData = Object.keys(grouped).map(date => ({
+                    date: date,
+                    games: grouped[date]
+                }));
+                
+                unlockedDays = calculateUnlockedDays();
+                
+                // On localhost, unlock all days and auto-navigate to LIVE matches
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                if (isLocal) {
+                    unlockedDays = matchData.length;
+                    // Find first day with a LIVE match and jump to it
+                    const liveDayIndex = matchData.findIndex(d => d.games.some(g => g.status === 'LIVE'));
+                    if (liveDayIndex !== -1) {
+                        currentMatchDayIndex = liveDayIndex;
+                    }
+                }
+                
+                // Render current day
+                renderDay(currentMatchDayIndex);
+                handleUrlParameters();
+            } catch (err) {
+                console.error("Error fetching matches:", err);
+                // Fallback to static mock list if offline
+                matchData = [
+                    {
+                        "date": "Thursday, 11 June 2026",
+                        "games": [
+                            {
+                                "id": "match_0",
+                                "team1": "Mexico",
+                                "team2": "South Africa",
+                                "group_name": "Group A",
+                                "status": "UPCOMING",
+                                "score1": 0,
+                                "score2": 0,
+                                "espn_id": "mock_espn_0",
+                                "polymarket_url": "https://polymarket.com/sports/fifa-world-cup/fifwc-mex-rsa-2026-06-11?r=cryptojanko"
+                            },
+                            {
+                                "id": "match_1",
+                                "team1": "Korea Republic",
+                                "team2": "Czechia",
+                                "group_name": "Group A",
+                                "status": "UPCOMING",
+                                "score1": 0,
+                                "score2": 0,
+                                "espn_id": "mock_espn_1",
+                                "polymarket_url": "https://polymarket.com/sports/fifa-world-cup/fifwc-kr-cze-2026-06-11?r=cryptojanko"
+                            }
+                        ]
+                    }
+                ];
+                unlockedDays = 1;
+                renderDay(currentMatchDayIndex);
+                handleUrlParameters();
+            }
+        }
+
+        function handleUrlParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetMatchId = urlParams.get('match');
+            if (!targetMatchId) return;
+            
+            let foundDayIndex = -1;
+            for (let i = 0; i < matchData.length; i++) {
+                if (matchData[i].games.some(g => g.id === targetMatchId)) {
+                    foundDayIndex = i;
+                    break;
+                }
+            }
+            
+            if (foundDayIndex !== -1) {
+                if (foundDayIndex >= unlockedDays) {
+                    unlockedDays = foundDayIndex + 1;
+                }
+                renderDay(foundDayIndex);
+                
+                setTimeout(() => {
+                    const matchCard = document.getElementById(`match-card-${targetMatchId}`);
+                    if (matchCard) {
+                        matchCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        matchCard.style.borderColor = '#ffcc00';
+                        toggleComments(targetMatchId);
+                    }
+                }, 500);
+            }
+        }
+
         function renderDay(index) {
             if(index < 0) index = 0;
             if(index >= matchData.length) index = matchData.length - 1;
             currentMatchDayIndex = index;
             
             const dayData = matchData[index];
+            if (!dayData) return;
+            
             document.getElementById("match-date-header").innerText = dayData.date.toUpperCase();
             
             const container = document.getElementById("games-list");
@@ -354,60 +490,316 @@
             }
             
             dayData.games.forEach((game, i) => {
-                const matchId = `match_${index}_${i}`;
+                const matchId = game.id;
                 const flag1 = `assets/flags/${game.team1}.png`;
                 const flag2 = `assets/flags/${game.team2}.png`;
+                
+                // Trumpinho predicted score logic
                 let predScore = "2 - 1";
                 let quote = "A very tough match. Believe me!";
-                
                 if(game.team1 === "USA") { predScore = "3 - 1"; quote = "We will build a wall in the midfield!"; }
                 else if(game.team1 === "Mexico" || game.team2 === "France") { predScore = "2 - 0"; quote = "Macron is very low energy. Sad!"; }
                 
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                
+                const realScore1 = game.status === 'UPCOMING' ? '-' : game.score1;
+                const realScore2 = game.status === 'UPCOMING' ? '-' : game.score2;
+                
+                const matchClock = game.match_clock || '';
+                const liveBadge = game.status === 'LIVE' ? 
+                    `<div style="display: inline-flex; align-items: center; gap: 6px; margin-top: 5px;">
+                        <div style="display: inline-block; background: #e63946; color: #fff; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 3px; animation: blink 1s infinite;">● LIVE</div>
+                        ${matchClock ? `<div style="display: inline-block; background: #0d1b2a; color: #ffcc00; font-size: 14px; font-weight: bold; padding: 3px 10px; border-radius: 3px; border: 1px solid #ffcc00; font-family: monospace;">${matchClock}</div>` : ''}
+                    </div>` : '';
+                
+                const finishedBadge = game.status === 'FINISHED' ? 
+                    `<div style="display: inline-block; background: #555; color: #fff; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 3px; margin-top: 5px;">FINISHED</div>` : '';
+                
+                let simButton = '';
+                
+                const pmUrl = game.polymarket_url || "https://polymarket.com/?r=cryptojanko";
+                const polymarketButton = `<a href="${pmUrl}" target="_blank" class="sound-btn" style="background: #0066cc; color: #fff; font-weight: bold; padding: 12px; font-size: 13px; border: 2px solid #000; box-shadow: 2px 2px 0 #000; text-align: center; text-decoration: none; display: block; margin: 0; line-height: 1.2;">BET ON POLYMARKET</a>`;
+                
+                let scoreColor = '#fff';
+                if (game.status === 'UPCOMING') {
+                    scoreColor = '#888';
+                } else if (game.status === 'LIVE') {
+                    scoreColor = '#e63946'; // red
+                } else if (game.status === 'FINISHED') {
+                    scoreColor = '#888'; // grey
+                }
+                
+                let praiseHtml = '';
+                if (game.status === 'FINISHED') {
+                    const predParts = predScore.split(" - ");
+                    const predG1 = parseInt(predParts[0].trim());
+                    const predG2 = parseInt(predParts[1].trim());
+                    const realG1 = Number(game.score1);
+                    const realG2 = Number(game.score2);
+                    
+                    const isExact = (predG1 === realG1 && predG2 === realG2);
+                    const isOutcome = !isExact && (
+                        (predG1 > predG2 && realG1 > realG2) ||
+                        (predG1 < predG2 && realG1 < realG2) ||
+                        (predG1 === predG2 && realG1 === realG2)
+                    );
+                    
+                    if (isExact) {
+                        const hash = Math.abs(game.id.split('').reduce((acc, char) => char.charCodeAt(0) + ((acc << 5) - acc), 0));
+                        const exactPraiseList = [
+                            "👑 EXACT HIT! A perfect prediction, folks. Nobody knows football like me, pure genius!",
+                            "🏆 PREDICTED PERFECTLY! The fake news said it was impossible, but I got the exact score. Yuge success!",
+                            "EXACT PREDICTION! Another perfect call by Trumpinho!",
+                            "⭐ PERFECT SCORE! I told you exactly what would happen. Absolute masterclass!"
+                        ];
+                        const praise = exactPraiseList[hash % exactPraiseList.length];
+                        praiseHtml = `<div style="background: rgba(255, 204, 0, 0.15); border: 2px dashed #ffcc00; border-radius: 6px; padding: 10px; font-size: 10px; color: #ffcc00; text-align: center; line-height: 1.4; text-shadow: 1px 1px 0 #000; font-weight: bold; margin-top: 8px;">${praise}</div>`;
+                    } else if (isOutcome) {
+                        const hash = Math.abs(game.id.split('').reduce((acc, char) => char.charCodeAt(0) + ((acc << 5) - acc), 0));
+                        const outcomePraiseList = [
+                            "CORRECT OUTCOME! A yuge tactical victory for Trumpinho, as always!",
+                            "⚽ WINNER PREDICTED! I knew they would win. My football brain is very, very large!",
+                            "💪 CORRECT CALL! We got the winner right. Still winning, so much winning!",
+                            "🔮 OUTCOME CORRECT! Another successful prediction by the GOAT, believe me!"
+                        ];
+                        const praise = outcomePraiseList[hash % outcomePraiseList.length];
+                        praiseHtml = `<div style="background: rgba(75, 111, 147, 0.15); border: 2px solid #4b6f93; border-radius: 6px; padding: 10px; font-size: 10px; color: #fff; text-align: center; line-height: 1.4; margin-top: 8px;">${praise}</div>`;
+                    }
+                }
+                
                 container.innerHTML += `
-                    <div style="background: #020100; border: 2px solid #4b6f93; border-radius: 8px; padding: 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px;">
+                    <div id="match-card-${game.id}" style="background: #020100; border: 2px solid #4b6f93; border-radius: 8px; padding: 25px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px;">
                         <!-- Teams -->
                         <div style="flex: 1.2; min-width: 180px; text-align: center;">
                             <div style="display: flex; justify-content: center; align-items: flex-start; gap: 10px;">
-                                <div style="display: flex; flex-direction: column; align-items: center; width: 100px;">
-                                    <img src="${flag1}" alt="${game.team1}" style="width: 50px; height: 35px; image-rendering: pixelated; margin-bottom: 5px;" onerror="this.src='https://placehold.co/50x35/222/fff?text=${game.team1}'">
-                                    <span style="font-size: 14px; font-weight: bold; color: #fff; width: 100px; display: inline-block; white-space: normal; line-height: 1.2;">${game.team1}</span>
+                                <div style="display: flex; flex-direction: column; align-items: center; width: 110px;">
+                                    <img src="${flag1}" alt="${game.team1}" style="width: 55px; height: 38px; image-rendering: pixelated; margin-bottom: 5px;" onerror="this.src='https://placehold.co/50x35/222/fff?text=${game.team1}'">
+                                    <span style="font-size: 16px; font-weight: bold; color: #fff; width: 110px; display: inline-block; white-space: normal; line-height: 1.2;">${game.team1}</span>
                                 </div>
-                                <div style="font-size: 14px; color: #888; font-weight: bold; margin-top: 10px;">VS</div>
-                                <div style="display: flex; flex-direction: column; align-items: center; width: 100px;">
-                                    <img src="${flag2}" alt="${game.team2}" style="width: 50px; height: 35px; image-rendering: pixelated; margin-bottom: 5px;" onerror="this.src='https://placehold.co/50x35/222/fff?text=${game.team2}'">
-                                    <span style="font-size: 14px; font-weight: bold; color: #fff; width: 100px; display: inline-block; white-space: normal; line-height: 1.2;">${game.team2}</span>
+                                <div style="font-size: 16px; color: #888; font-weight: bold; margin-top: 10px;">VS</div>
+                                <div style="display: flex; flex-direction: column; align-items: center; width: 110px;">
+                                    <img src="${flag2}" alt="${game.team2}" style="width: 55px; height: 38px; image-rendering: pixelated; margin-bottom: 5px;" onerror="this.src='https://placehold.co/50x35/222/fff?text=${game.team2}'">
+                                    <span style="font-size: 16px; font-weight: bold; color: #fff; width: 110px; display: inline-block; white-space: normal; line-height: 1.2;">${game.team2}</span>
                                 </div>
                             </div>
-                            <span style="font-size: 10px; color: #aaa; display: block; margin-top: 10px;">${game.group.toUpperCase()}</span>
+                            <span style="font-size: 12px; color: #aaa; display: block; margin-top: 10px;">${game.group_name.toUpperCase()}</span>
+                            <div style="display: flex; justify-content: center; gap: 5px; margin-top: 5px;">
+                                ${liveBadge}
+                                ${finishedBadge}
+                            </div>
                         </div>
                         
                         <!-- Predictions & Real Score -->
-                        <div style="flex: 1.2; min-width: 160px; display: flex; gap: 10px;">
-                            <div style="flex: 1; background: #1d3557; padding: 15px 10px; border: 2px dashed #ffcc00; text-align: center; border-radius: 8px; display: flex; flex-direction: column; justify-content: center;">
-                                <span style="font-size: 10px; color: #ffcc00; display: block; margin-bottom: 5px; font-weight: bold;">TRUMPINHO SAYS:</span>
-                                <div style="font-size: 22px; font-weight: bold; color: #fff; white-space: nowrap;">${predScore}</div>
+                        <div style="flex: 1.2; min-width: 180px; display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; gap: 10px; width: 100%;">
+                                <div style="flex: 1; background: #1d3557; padding: 15px 10px; border: 2px dashed #ffcc00; text-align: center; border-radius: 8px; display: flex; flex-direction: column; justify-content: center;">
+                                    <span style="font-size: 12px; color: #ffcc00; display: block; margin-bottom: 5px; font-weight: bold;">TRUMPINHO SAYS:</span>
+                                    <div style="font-size: 26px; font-weight: bold; color: #fff; white-space: nowrap;">${predScore}</div>
+                                </div>
+                                
+                                <div style="flex: 1; background: #1d3557; padding: 15px 10px; border: 2px solid #4b6f93; text-align: center; border-radius: 8px; display: flex; flex-direction: column; justify-content: center;">
+                                    <span style="font-size: 12px; color: #aaa; display: block; margin-bottom: 5px; font-weight: bold;">LIVE SCORE:</span>
+                                    <div style="font-size: 26px; font-weight: bold; color: ${scoreColor}; white-space: nowrap;">${realScore1} - ${realScore2}</div>
+                                </div>
                             </div>
-                            
-                            <div style="flex: 1; background: #1d3557; padding: 15px 10px; border: 2px solid #4b6f93; text-align: center; border-radius: 8px; display: flex; flex-direction: column; justify-content: center;">
-                                <span style="font-size: 10px; color: #aaa; display: block; margin-bottom: 5px; font-weight: bold;">REAL SCORE:</span>
-                                <div style="font-size: 22px; font-weight: bold; color: #888; white-space: nowrap;">-</div>
-                            </div>
+                            ${praiseHtml}
                         </div>
-
+ 
                         <!-- Actions -->
-                        <div style="flex: 1; min-width: 150px; display: flex; flex-direction: column; gap: 8px;">
-                            <button class="sound-btn" onclick="playMatchAudio('${matchId}')" id="${matchId}-btn" style="background: #ffcc00; color: #000; font-weight: bold; padding: 12px; font-size: 12px; border: 2px solid #000; box-shadow: 2px 2px 0 #000; transition: 0.15s; margin: 0;">HEAR PREDICTION</button>
-                            <a href="${game.link}" target="_blank" style="text-decoration: none; text-align: center; background: #1d3557; color: #fff; font-weight: bold; padding: 12px; font-size: 12px; border: 2px solid #0088cc; box-shadow: 2px 2px 0 #0088cc; transition: 0.15s;">BET ON POLYMARKET</a>
-                            <button class="sound-btn" onclick="shareMatchPrediction('${game.team1} ${predScore} ${game.team2}', '${quote}', '${matchId}')" style="background: #000; color: #fff; font-weight: bold; padding: 12px; font-size: 12px; border: 2px solid #ffcc00; box-shadow: 2px 2px 0 #ffcc00; transition: 0.15s; margin: 0;">SHARE ON X</button>
+                        <div style="flex: 1; min-width: 170px; display: flex; flex-direction: column; gap: 8px;">
+                            <button class="sound-btn" onclick="playMatchAudio('${matchId}')" id="${matchId}-btn" style="background: #ffcc00; color: #000; font-weight: bold; padding: 12px; font-size: 14px; border: 2px solid #000; box-shadow: 2px 2px 0 #000; transition: 0.15s; margin: 0;">HEAR PREDICTION</button>
+                            ${polymarketButton}
+                            <button class="sound-btn" onclick="toggleComments('${game.id}')" id="${game.id}-comments-btn" style="background: #1d3557; color: #fff; font-weight: bold; padding: 12px; font-size: 14px; border: 2px solid #000; box-shadow: 2px 2px 0 #000; transition: 0.15s; margin: 0;">LIVE COMMENTARY</button>
+                            ${simButton}
                         </div>
                         <audio id="${matchId}-audio" src="assets/audio/${game.team1.toLowerCase().replace(/ /g, '_')}_vs_${game.team2.toLowerCase().replace(/ /g, '_')}.mp3" onerror="this.src='assets/audio/quote_1.mp3'"></audio>
+ 
+                        <!-- Live Commentary Section (Expanded dynamically) -->
+                        <div class="live-commentary-section" id="comments-box-${game.id}" style="width: 100%; margin-top: 15px; border-top: 2px dashed #4b6f93; padding-top: 15px; display: none; text-align: left;">
+                            <h4 style="color: #ffcc00; font-size: 14px; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
+                                <span class="live-pulse" style="display: inline-block; width: 10px; height: 10px; background: #e63946; border-radius: 50%; animation: blink 1s infinite;"></span>
+                                TRUMPINHO'S LIVE ROASTS:
+                            </h4>
+                            <div class="comments-timeline" id="timeline-${game.id}" style="display: flex; flex-direction: column; gap: 12px; max-height: 300px; overflow-y: auto; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 6px; border: 1px solid #4b6f93; font-family: monospace;">
+                                <div style="color: #aaa; font-style: italic; font-size: 13px; text-align: center; padding: 10px 0;">No events yet. Stay tuned, folks!</div>
+                            </div>
+                        </div>
                     </div>
                 `;
             });
+ 
+            // Re-open active timelines
+            Object.keys(activePollers).forEach(mId => {
+                const box = document.getElementById(`comments-box-${mId}`);
+                if (box) {
+                    box.style.display = 'block';
+                    const btn = document.getElementById(`${mId}-comments-btn`);
+                    if (btn) btn.innerText = "CLOSE COMMENTS";
+                    fetchComments(mId);
+                }
+            });
         }
 
-        
+        async function startSim(matchId) {
+            try {
+                await fetch(`${API_BASE}/api/matches/${matchId}/simulate`, { method: 'POST' });
+                loadMatches();
+            } catch (err) {
+                console.error("Error starting simulation:", err);
+            }
+        }
+
+        async function stopSim(matchId) {
+            try {
+                await fetch(`${API_BASE}/api/matches/${matchId}/stop-simulate`, { method: 'POST' });
+                loadMatches();
+            } catch (err) {
+                console.error("Error stopping simulation:", err);
+            }
+        }
+
+        function toggleComments(matchId) {
+            const box = document.getElementById(`comments-box-${matchId}`);
+            const btn = document.getElementById(`${matchId}-comments-btn`);
+            if (!box || !btn) return;
+            
+            if (box.style.display === 'none') {
+                box.style.display = 'block';
+                btn.innerText = "CLOSE COMMENTS";
+                
+                fetchComments(matchId);
+                activePollers[matchId] = setInterval(() => fetchComments(matchId), 10000);
+            } else {
+                box.style.display = 'none';
+                btn.innerText = "LIVE COMMENTARY";
+                
+                clearInterval(activePollers[matchId]);
+                delete activePollers[matchId];
+            }
+        }
+
+        function formatScoreText(text, team1, team2) {
+            if (!text || !team1 || !team2) return text;
+            
+            const escapeRegex = (string) => string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const t1Esc = escapeRegex(team1);
+            const t2Esc = escapeRegex(team2);
+
+            // Match Team1 score, Team2 score
+            const regex1 = new RegExp(`(${t1Esc})\\s+(\\d+),\\s*(${t2Esc})\\s+(\\d+)`, 'gi');
+            // Match Team2 score, Team1 score
+            const regex2 = new RegExp(`(${t2Esc})\\s+(\\d+),\\s*(${t1Esc})\\s+(\\d+)`, 'gi');
+
+            let formatted = text;
+            formatted = formatted.replace(regex1, (match, g1, g2, g3, g4) => {
+                return `${g1} - ${g3} ${g2}:${g4}`;
+            });
+            formatted = formatted.replace(regex2, (match, g1, g2, g3, g4) => {
+                return `${g3} - ${g1} ${g4}:${g2}`;
+            });
+
+            return formatted;
+        }
+
+        async function fetchComments(matchId) {
+            try {
+                const res = await fetch(`${API_BASE}/api/matches/${matchId}/comments`);
+                const comments = await res.json();
+                const timeline = document.getElementById(`timeline-${matchId}`);
+                if (!timeline) return;
+                
+                if (comments.length === 0) {
+                    timeline.innerHTML = `<div style="color: #aaa; font-style: italic; font-size: 13px; text-align: center; padding: 10px 0;">No events yet. Stay tuned, folks!</div>`;
+                    loadedCommentCounts[matchId] = 0;
+                    return;
+                }
+                
+                const isStatusLive = matchData[currentMatchDayIndex].games.find(g => g.id === matchId)?.status === 'LIVE';
+                if (isStatusLive) {
+                    const prevCount = loadedCommentCounts[matchId];
+                    if (prevCount !== undefined && comments.length !== prevCount) {
+                        loadedCommentCounts[matchId] = comments.length;
+                        setTimeout(() => loadMatches(), 100);
+                    } else {
+                        loadedCommentCounts[matchId] = comments.length;
+                    }
+                } else {
+                    loadedCommentCounts[matchId] = comments.length;
+                }
+                
+                const game = matchData[currentMatchDayIndex]?.games?.find(g => g.id === matchId);
+                const team1 = game?.team1 || '';
+                const team2 = game?.team2 || '';
+
+                timeline.innerHTML = comments.map(c => {
+                    const evType = (c.event_type || '').toUpperCase();
+                    
+                    const formattedRoast = formatScoreText(c.trumpinho_roast || '', team1, team2);
+                    const formattedRaw = formatScoreText(c.raw_text || '', team1, team2);
+
+                    const rawTextUpper = formattedRaw.toUpperCase();
+                    const roastUpper = formattedRoast.toUpperCase();
+                    const isMatchEnded = rawTextUpper.includes('MATCH END') ||
+                                         rawTextUpper.includes('SECOND HALF END') ||
+                                         rawTextUpper.includes('FULL TIME') ||
+                                         roastUpper.includes('MATCH END') ||
+                                         roastUpper.includes('SECOND HALF END') ||
+                                         roastUpper.includes('FULL TIME') ||
+                                         (c.minute >= 90 && (rawTextUpper.includes('ENDS') || roastUpper.includes('ENDS') || evType.includes('WHISTLE')));
+
+                    let typeEmoji = "";
+                    if (isMatchEnded) typeEmoji = "🏁 MATCH ENDED";
+                    else if (evType.includes('GOAL')) typeEmoji = "⚽ GOAL!";
+                    else if (evType.includes('CARD')) typeEmoji = "🟨 CARD";
+                    else if (evType.includes('FOUL')) typeEmoji = "⚠️ FOUL";
+                    else if (evType.includes('MISS') || evType.includes('OFF TARGET')) typeEmoji = "❌ MISS";
+                    else if (evType.includes('WHISTLE')) typeEmoji = "🎺 WHISTLE";
+                    
+                    const videoLink = c.video_url ? 
+                        `<div style="margin-top: 5px;"><a href="${c.video_url}" target="_blank" style="color: #ffcc00; font-size: 12px; text-decoration: underline;">🎥 View Highlight Clip</a></div>` : '';
+                    
+                    const isGoal = evType.includes('GOAL');
+                    
+                    let eventStyle = `border-left: 3px solid #ffcc00; padding-left: 10px; margin-bottom: 8px; text-align: left;`;
+                    let titleStyle = `font-size: 12px; color: #ffcc00; font-weight: bold;`;
+                    let textStyle = `font-size: 13px; color: #fff; font-style: italic; margin: 4px 0;`;
+
+                    if (isGoal) {
+                        eventStyle = `border: 3px solid #ffcc00; background: rgba(255, 204, 0, 0.15); padding: 12px; border-radius: 8px; margin-bottom: 10px; text-align: left; box-shadow: 0 0 15px rgba(255, 204, 0, 0.5);`;
+                        titleStyle = `font-size: 14px; color: #ffcc00; font-weight: bold; text-shadow: 2px 2px 0 #000;`;
+                        textStyle = `font-size: 15px; color: #fff; font-weight: bold; font-style: italic; margin: 6px 0; text-shadow: 1px 1px 0 #000;`;
+                    } else if (isMatchEnded) {
+                        eventStyle = `border: 3px solid #888888; background: rgba(136, 136, 136, 0.15); padding: 12px; border-radius: 8px; margin-bottom: 10px; text-align: left; box-shadow: 0 0 15px rgba(136, 136, 136, 0.5);`;
+                        titleStyle = `font-size: 14px; color: #888888; font-weight: bold; text-shadow: 2px 2px 0 #000;`;
+                        textStyle = `font-size: 15px; color: #fff; font-weight: bold; font-style: italic; margin: 6px 0; text-shadow: 1px 1px 0 #000;`;
+                    }
+
+                    const headerText = typeEmoji ? `[${c.minute}'] ${typeEmoji}` : `[${c.minute}']`;
+                    
+                    return `
+                        <div style="${eventStyle}">
+                            <div style="${titleStyle}">
+                                ${headerText}
+                            </div>
+                            <div style="${textStyle}">
+                                "${formattedRoast}"
+                            </div>
+                            <div style="display: none; font-size: 11px; color: #888;">
+                                Raw Play: ${formattedRaw}
+                            </div>
+                            ${videoLink}
+                        </div>
+                    `;
+                }).join('');
+                
+                timeline.scrollTop = timeline.scrollHeight;
+            } catch (err) {
+                console.error("Error fetching comments:", err);
+            }
+        }
+
         function calculateUnlockedDays() {
+            if (matchData.length === 0) return 1;
             const nyTimeStr = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
             const nowNy = new Date(nyTimeStr);
             let unlocked = 0;
@@ -424,7 +816,6 @@
             }
             return Math.max(1, unlocked);
         }
-        const unlockedDays = calculateUnlockedDays();
 
         function nextDay() { 
             if (currentMatchDayIndex < matchData.length - 1) {
@@ -442,7 +833,7 @@
         let touchstartX = 0;
         let touchendX = 0;
         document.addEventListener("DOMContentLoaded", () => {
-            renderDay(0);
+            loadMatches();
             
             const hubContainer = document.getElementById("match-day-hub");
             if (hubContainer) {
@@ -454,6 +845,23 @@
                     if (touchendX < touchstartX - 50) nextDay(); 
                     if (touchendX > touchstartX + 50) prevDay(); 
                 });
+            }
+
+            // Render Meme Generator Legends dynamically
+            const memeImages = [
+                '1.png', '2.png', '4.png', '5.png', '6.png', '7.png', '8.png', '9.png', '10.png', '11.png',
+                '12.png', '13.png', '14.png', '15.png', '16.png', '17.png', '18.png', '19.png', '20.png', '21.png',
+                '22.png', '23.png', '24.png', '25.png', '26.png', '27.png', '28.png', '29.png', '30.png'
+            ];
+            const legendsList = document.getElementById('meme-legends-list');
+            if (legendsList) {
+                legendsList.innerHTML = memeImages.map(img => `
+                    <img src="assets/meme_generator_images/${img}" 
+                         style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border: 2px solid transparent; background: rgba(255,255,255,0.05); border-radius: 4px;" 
+                         onmouseover="this.style.borderColor='#ffcc00'" 
+                         onmouseout="this.style.borderColor='transparent'" 
+                         onclick="document.getElementById('meme-img-1').src='assets/meme_generator_images/${img}'">
+                `).join('');
             }
         });
 
@@ -633,7 +1041,7 @@
             
             // Stop roast audio if playing
             const roastAudio = document.getElementById('roast-audio');
-            if(!roastAudio.paused) {
+            if(roastAudio && !roastAudio.paused) {
                 playCurrentChannel(); // toggles it off
             }
 
@@ -642,7 +1050,7 @@
                 currentlyPlayingMatchAudio.pause();
                 const oldBtn = document.getElementById(currentlyPlayingMatchAudio.id.replace('-audio', '-btn'));
                 if(oldBtn) {
-                    oldBtn.innerText = '▶ PLAY PREDICTION & ROAST';
+                    oldBtn.innerText = 'HEAR PREDICTION';
                     oldBtn.style.background = '#ffcc00';
                     oldBtn.style.color = '#000';
                 }
@@ -656,13 +1064,13 @@
                 currentlyPlayingMatchAudio = audio;
             } else {
                 audio.pause();
-                btn.innerText = '▶ PLAY PREDICTION & ROAST';
+                btn.innerText = 'HEAR PREDICTION';
                 btn.style.background = '#ffcc00';
                 btn.style.color = '#000';
             }
             
             audio.onended = function() {
-                btn.innerText = '▶ PLAY PREDICTION & ROAST';
+                btn.innerText = 'HEAR PREDICTION';
                 btn.style.background = '#ffcc00';
                 btn.style.color = '#000';
             };
@@ -689,7 +1097,7 @@
                 currentlyPlayingMatchAudio.pause();
                 const mBtn = document.getElementById(currentlyPlayingMatchAudio.id.replace('-audio', '-btn'));
                 if(mBtn) {
-                    mBtn.innerText = '▶ PLAY PREDICTION & ROAST';
+                    mBtn.innerText = 'HEAR PREDICTION';
                     mBtn.style.background = '#ffcc00';
                     mBtn.style.color = '#000';
                 }
