@@ -629,7 +629,8 @@
                 // Trumpinho predicted score logic
                 let predScore = "2 - 1";
                 let quote = "A very tough match. Believe me!";
-                if(game.id === "match_live_test") { predScore = "2 - 0"; quote = "Netherlands is strong, but Uzbekistan will be completely outplayed, believe me!"; }
+                if(game.id === "match_live_today_3") { predScore = "0 - 2"; }
+                else if(game.id === "match_live_test") { predScore = "2 - 0"; quote = "Netherlands is strong, but Uzbekistan will be completely outplayed, believe me!"; }
                 else if(game.team1 === "USA") { predScore = "3 - 1"; quote = "We will build a wall in the midfield!"; }
                 else if(game.team1 === "Mexico" || game.team2 === "France") { predScore = "2 - 0"; quote = "Macron is very low energy. Sad!"; }
                 
