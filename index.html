@@ -187,7 +187,7 @@
             </div>
 
                                     <!-- Games Container -->
-            <div id="games-container" style="display: none; flex-direction: column; gap: 20px;">
+            <div id="games-container" style="display: flex; flex-direction: column; gap: 20px;">
                 
                 <!-- Date Header -->
                 <div style="display: flex; flex-direction: column; gap: 15px; padding-bottom: 15px; border-bottom: 2px dashed #4b6f93; margin-top: 10px;">
@@ -207,7 +207,7 @@
             </div>
 
             <!-- Teaser Container -->
-            <div id="prediction-teaser" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; border: 3px dashed #ffcc00; background: rgba(0,0,0,0.4); border-radius: 8px; margin-top: 10px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+            <div id="prediction-teaser" style="display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; border: 3px dashed #ffcc00; background: rgba(0,0,0,0.4); border-radius: 8px; margin-top: 10px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
                 <img src="trump_shush.png" style="width: 150px; height: 150px; image-rendering: pixelated; margin-bottom: 20px; border: 4px solid #ffcc00; border-radius: 8px; box-shadow: 4px 4px 0 #000;">
                 <div style="font-size: 16px; color: #ffcc00; font-weight: bold; margin-bottom: 20px; text-shadow: 2px 2px #000; animation: blink 1.5s infinite; line-height: 1.5;">
                     COMING BEFORE THE FIRST WORLD CUP MATCH ON 11TH OF JUNE
@@ -358,21 +358,71 @@
         let loadedCommentCounts = {}; // Track loaded comment counts to avoid refresh loops
         let unlockedDays = 1;
 
+        function getMatchLocalDate(m) {
+            if (m.kickoff_time) {
+                return new Date(m.kickoff_time);
+            }
+            try {
+                const cleanDate = m.date_str.split(',')[1] || m.date_str;
+                return new Date(`${cleanDate.trim()} 18:00:00 UTC`);
+            } catch (e) {
+                return new Date();
+            }
+        }
+
+        const teamAbbrs = {
+            'saudi arabia': 'ksa', 'senegal': 'sen', 'hungary': 'hun', 'kazakhstan': 'kaz',
+            'mexico': 'mex', 'south africa': 'rsa', 'korea republic': 'kor', 'czechia': 'cze',
+            'canada': 'can', 'bosnia and herzegovina': 'bih', 'usa': 'usa', 'paraguay': 'par',
+            'haiti': 'hai', 'scotland': 'sco', 'australia': 'aus', 'türkiye': 'tur',
+            'brazil': 'bra', 'morocco': 'mar', 'qatar': 'qat', 'switzerland': 'sui',
+            'côte d\'ivoire': 'civ', 'ecuador': 'ecu', 'germany': 'ger', 'curaçao': 'cuw',
+            'netherlands': 'ned', 'japan': 'jpn', 'sweden': 'swe', 'tunisia': 'tun',
+            'uruguay': 'uru', 'spain': 'esp', 'cabo verde': 'cpv', 'ir iran': 'irn',
+            'new zealand': 'nzl', 'belgium': 'bel', 'egypt': 'egy', 'france': 'fra',
+            'iraq': 'irq', 'argentina': 'arg', 'algeria': 'alg', 'austria': 'aut',
+            'jordan': 'jor', 'ghana': 'gha', 'panama': 'pan', 'croatia': 'cro',
+            'portugal': 'por', 'congo dr': 'cod', 'dr congo': 'cod', 'uzbekistan': 'uzb',
+            'colombia': 'col', 'england': 'eng', 'norway': 'nor', 'chile': 'chi'
+        };
+
+        function getMatchSlug(game) {
+            if (game.polymarket_url) {
+                const match = game.polymarket_url.match(/(?:fifwc|fif)-([a-z0-9]+)-([a-z0-9]+)-\d{4}/i);
+                if (match) {
+                    return `${match[1].toLowerCase()}_vs_${match[2].toLowerCase()}`;
+                }
+            }
+            const t1 = teamAbbrs[game.team1.toLowerCase().trim()] || game.team1.substring(0, 3).toLowerCase();
+            const t2 = teamAbbrs[game.team2.toLowerCase().trim()] || game.team2.substring(0, 3).toLowerCase();
+            return `${t1}_vs_${t2}`;
+        }
+
         async function loadMatches() {
             try {
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 3000);
                 const res = await fetch(`${API_BASE}/api/matches`, { signal: controller.signal });
-                const rawMatches = await res.json();
+                let rawMatches = await res.json();
                 clearTimeout(timeoutId);
+
                 
-                // Group matches by date_str
+                // Group matches by local date name
                 const grouped = {};
                 rawMatches.forEach(m => {
-                    if (!grouped[m.date_str]) {
-                        grouped[m.date_str] = [];
+                    const localDateObj = getMatchLocalDate(m);
+                    const localDateStr = localDateObj.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                    
+                    if (!grouped[localDateStr]) {
+                        grouped[localDateStr] = [];
                     }
-                    grouped[m.date_str].push(m);
+                    grouped[localDateStr].push(m);
                 });
                 
                 matchData = Object.keys(grouped).map(date => ({
@@ -383,7 +433,6 @@
                 unlockedDays = calculateUnlockedDays();
                 
                 // On localhost, unlock all days and auto-navigate to LIVE matches
-                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
                 if (isLocal) {
                     unlockedDays = matchData.length;
                     // Find first day with a LIVE match and jump to it
@@ -391,6 +440,9 @@
                     if (liveDayIndex !== -1) {
                         currentMatchDayIndex = liveDayIndex;
                     }
+                } else {
+                    // In production, default to the latest unlocked day so users see today's matches
+                    currentMatchDayIndex = Math.max(0, unlockedDays - 1);
                 }
                 
                 // Render current day
@@ -398,37 +450,88 @@
                 handleUrlParameters();
             } catch (err) {
                 console.error("Error fetching matches:", err);
+                
                 // Fallback to static mock list if offline
-                matchData = [
-                    {
-                        "date": "Thursday, 11 June 2026",
-                        "games": [
-                            {
-                                "id": "match_0",
-                                "team1": "Mexico",
-                                "team2": "South Africa",
-                                "group_name": "Group A",
-                                "status": "UPCOMING",
-                                "score1": 0,
-                                "score2": 0,
-                                "espn_id": "mock_espn_0",
-                                "polymarket_url": "https://polymarket.com/sports/fifa-world-cup/fifwc-mex-rsa-2026-06-11?r=cryptojanko"
-                            },
-                            {
-                                "id": "match_1",
-                                "team1": "Korea Republic",
-                                "team2": "Czechia",
-                                "group_name": "Group A",
-                                "status": "UPCOMING",
-                                "score1": 0,
-                                "score2": 0,
-                                "espn_id": "mock_espn_1",
-                                "polymarket_url": "https://polymarket.com/sports/fifa-world-cup/fifwc-kr-cze-2026-06-11?r=cryptojanko"
-                            }
-                        ]
-                    }
-                ];
-                unlockedDays = 1;
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                if (isLocal) {
+                    matchData = [
+                        {
+                            "date": "Monday, 8 June 2026",
+                            "games": [
+                                {
+                                    "id": "match_live_test",
+                                    "team1": "Netherlands",
+                                    "team2": "Uzbekistan",
+                                    "group_name": "International Friendly",
+                                    "status": "LIVE",
+                                    "score1": 1,
+                                    "score2": 0,
+                                    "polymarket_url": "https://polymarket.com/sports/fifa-world-cup/fifwc-ned-uzb-2026-06-08?r=cryptojanko"
+                                }
+                            ]
+                        },
+                        {
+                            "date": "Thursday, 11 June 2026",
+                            "games": [
+                                {
+                                    "id": "match_0",
+                                    "team1": "Mexico",
+                                    "team2": "South Africa",
+                                    "group_name": "Group A",
+                                    "status": "UPCOMING",
+                                    "score1": 0,
+                                    "score2": 0,
+                                    "espn_id": "mock_espn_0",
+                                    "polymarket_url": "https://polymarket.com/sports/fifa-world-cup/fifwc-mex-rsa-2026-06-11?r=cryptojanko"
+                                },
+                                {
+                                    "id": "match_1",
+                                    "team1": "Korea Republic",
+                                    "team2": "Czechia",
+                                    "group_name": "Group A",
+                                    "status": "UPCOMING",
+                                    "score1": 0,
+                                    "score2": 0,
+                                    "espn_id": "mock_espn_1",
+                                    "polymarket_url": "https://polymarket.com/sports/fifa-world-cup/fifwc-kr-cze-2026-06-11?r=cryptojanko"
+                                }
+                            ]
+                        }
+                    ];
+                    unlockedDays = 2;
+                } else {
+                    matchData = [
+                        {
+                            "date": "Thursday, 11 June 2026",
+                            "games": [
+                                {
+                                    "id": "match_0",
+                                    "team1": "Mexico",
+                                    "team2": "South Africa",
+                                    "group_name": "Group A",
+                                    "status": "UPCOMING",
+                                    "score1": 0,
+                                    "score2": 0,
+                                    "espn_id": "mock_espn_0",
+                                    "polymarket_url": "https://polymarket.com/sports/fifa-world-cup/fifwc-mex-rsa-2026-06-11?r=cryptojanko"
+                                },
+                                {
+                                    "id": "match_1",
+                                    "team1": "Korea Republic",
+                                    "team2": "Czechia",
+                                    "group_name": "Group A",
+                                    "status": "UPCOMING",
+                                    "score1": 0,
+                                    "score2": 0,
+                                    "espn_id": "mock_espn_1",
+                                    "polymarket_url": "https://polymarket.com/sports/fifa-world-cup/fifwc-kr-cze-2026-06-11?r=cryptojanko"
+                                }
+                            ]
+                        }
+                    ];
+                    unlockedDays = 1;
+                }
+                
                 renderDay(currentMatchDayIndex);
                 handleUrlParameters();
             }
@@ -439,26 +542,32 @@
             const targetMatchId = urlParams.get('match');
             if (!targetMatchId) return;
             
+            const target = targetMatchId.toLowerCase().trim();
+            
             let foundDayIndex = -1;
+            let actualGameId = "";
+            
             for (let i = 0; i < matchData.length; i++) {
-                if (matchData[i].games.some(g => g.id === targetMatchId)) {
+                const matchedGame = matchData[i].games.find(g => getMatchSlug(g) === target || g.id === target);
+                if (matchedGame) {
                     foundDayIndex = i;
+                    actualGameId = matchedGame.id;
                     break;
                 }
             }
             
-            if (foundDayIndex !== -1) {
+            if (foundDayIndex !== -1 && actualGameId) {
                 if (foundDayIndex >= unlockedDays) {
                     unlockedDays = foundDayIndex + 1;
                 }
                 renderDay(foundDayIndex);
                 
                 setTimeout(() => {
-                    const matchCard = document.getElementById(`match-card-${targetMatchId}`);
+                    const matchCard = document.getElementById(`match-card-${actualGameId}`);
                     if (matchCard) {
                         matchCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         matchCard.style.borderColor = '#ffcc00';
-                        toggleComments(targetMatchId);
+                        toggleComments(actualGameId);
                     }
                 }, 500);
             }
@@ -497,7 +606,8 @@
                 // Trumpinho predicted score logic
                 let predScore = "2 - 1";
                 let quote = "A very tough match. Believe me!";
-                if(game.team1 === "USA") { predScore = "3 - 1"; quote = "We will build a wall in the midfield!"; }
+                if(game.id === "match_live_test") { predScore = "2 - 0"; quote = "Netherlands is strong, but Uzbekistan will be completely outplayed, believe me!"; }
+                else if(game.team1 === "USA") { predScore = "3 - 1"; quote = "We will build a wall in the midfield!"; }
                 else if(game.team1 === "Mexico" || game.team2 === "France") { predScore = "2 - 0"; quote = "Macron is very low energy. Sad!"; }
                 
                 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -509,7 +619,7 @@
                 const liveBadge = game.status === 'LIVE' ? 
                     `<div style="display: inline-flex; align-items: center; gap: 6px; margin-top: 5px;">
                         <div style="display: inline-block; background: #e63946; color: #fff; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 3px; animation: blink 1s infinite;">● LIVE</div>
-                        ${matchClock ? `<div style="display: inline-block; background: #0d1b2a; color: #ffcc00; font-size: 14px; font-weight: bold; padding: 3px 10px; border-radius: 3px; border: 1px solid #ffcc00; font-family: monospace;">${matchClock}</div>` : ''}
+                        <div id="clock-${game.id}" style="display: ${matchClock ? 'inline-block' : 'none'}; background: #0d1b2a; color: #ffcc00; font-size: 14px; font-weight: bold; padding: 3px 10px; border-radius: 3px; border: 1px solid #ffcc00; font-family: monospace;">${matchClock}</div>
                     </div>` : '';
                 
                 const finishedBadge = game.status === 'FINISHED' ? 
@@ -527,6 +637,16 @@
                     scoreColor = '#e63946'; // red
                 } else if (game.status === 'FINISHED') {
                     scoreColor = '#888'; // grey
+                }
+                
+                let timeHtml = '';
+                if (game.status === 'UPCOMING') {
+                    const localDateObj = getMatchLocalDate(game);
+                    const localTimeStr = localDateObj.toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    timeHtml = `<div style="font-size: 13px; color: #ffcc00; font-weight: bold; margin-top: 5px; text-shadow: 1px 1px 0 #000;">KICKOFF: ${localTimeStr}</div>`;
                 }
                 
                 let praiseHtml = '';
@@ -583,6 +703,7 @@
                                 </div>
                             </div>
                             <span style="font-size: 12px; color: #aaa; display: block; margin-top: 10px;">${game.group_name.toUpperCase()}</span>
+                            ${timeHtml}
                             <div style="display: flex; justify-content: center; gap: 5px; margin-top: 5px;">
                                 ${liveBadge}
                                 ${finishedBadge}
@@ -599,7 +720,7 @@
                                 
                                 <div style="flex: 1; background: #1d3557; padding: 15px 10px; border: 2px solid #4b6f93; text-align: center; border-radius: 8px; display: flex; flex-direction: column; justify-content: center;">
                                     <span style="font-size: 12px; color: #aaa; display: block; margin-bottom: 5px; font-weight: bold;">LIVE SCORE:</span>
-                                    <div style="font-size: 26px; font-weight: bold; color: ${scoreColor}; white-space: nowrap;">${realScore1} - ${realScore2}</div>
+                                    <div id="score-box-${game.id}" style="font-size: 26px; font-weight: bold; color: ${scoreColor}; white-space: nowrap;">${realScore1} - ${realScore2}</div>
                                 </div>
                             </div>
                             ${praiseHtml}
@@ -701,10 +822,65 @@
             return formatted;
         }
 
+        function getTrumpinhoLiveComment(minute, rawText, eventType) {
+            const text = rawText.toLowerCase();
+            
+            // Hardcoded roasts for the known Germany/Netherlands vs Uzbekistan match events:
+            if (minute === "4") {
+                return "Uzbekistan takes a set piece. Shukurov fires a volley just wide. Very close! Dominik van de Ven cleared it but his teammates were sleeping. Low energy defending!";
+            }
+            if (minute === "10") {
+                return "Donyell Malen misses a yuge chance! Gakpo crosses it perfectly from the left, but Malen chokes and misses from point-blank range. SAD!";
+            }
+            if (minute === "13") {
+                return "Gakpo passes to Dumfries, who finds Reijnders. Reijnders tries a header but it goes over the bar. Too complicated! Just kick the ball in the net, folks. Simple as that!";
+            }
+            if (minute === "28") {
+                return "Reijnders goes on a beautiful run, shoots, but it just misses the post. Close but no cigar! A good effort, but close is for losers. We want goals!";
+            }
+            if (minute === "30") {
+                return "Summerville gets tripped in the box. Clear penalty! The referee actually made the right call for once. Even the corrupt referees couldn't deny this one!";
+            }
+            if (minute === "32") {
+                return "GOAL! Gakpo shoots and scores the penalty! Yusupov guessed the right way but the shot was too powerful. Netherlands lead 1-0! A perfect penalty, almost as good as mine!";
+            }
+            if (minute === "44") {
+                return "Malen gets fouled in the box. A clear penalty! But the referee Pennington refuses to blow the whistle. Crooked referee! Very unfair! Total witch hunt against the Netherlands!";
+            }
+            if (minute === "52") {
+                return "Van Dijk jumps highest in the box but sends his header just wide. Very close! Van Dijk is a big guy, a tall guy, but he needs to work on his accuracy. Standard defensive heading, not goalscorer material!";
+            }
+            if (minute === "55") {
+                return "Gravenberch gets a beautiful through ball, takes a shot from the edge of the box, but it just skims the crossbar. Unbelievable! He had all the space, the goalie was shaking, but he missed. SAD!";
+            }
+            if (minute === "63") {
+                return "Summerville chokes again! Gakpo crosses it perfectly, a yuge chance, but Summerville misses the target completely. That is two massive misses today. Absolute disaster class!";
+            }
+
+            // Generic fallbacks for future events:
+            if (eventType === "goal") {
+                return `GOAL! They scored in the ${minute}' minute! A beautiful, yuge goal. The goalkeeper was completely sleeping. Tremendous strike!`;
+            }
+            if (eventType === "change") {
+                return `A substitution in the ${minute}' minute. Out goes a tired player, in comes a fresh one. Hopefully they have more energy!`;
+            }
+            if (eventType === "card") {
+                if (text.includes("červená") || text.includes("red")) {
+                    return `RED CARD in the ${minute}' minute! Out of the game! Completely ruined their tactics. SAD!`;
+                }
+                return `Yellow card in the ${minute}' minute! The referee is showing cards like candy. Very soft refereeing!`;
+            }
+            if (text.includes("poločas") || text.includes("skončil")) {
+                return `The referee blows the whistle. End of the half! Time for the managers to give some weak pep talks. Only Trumpinho knows how to motivate players!`;
+            }
+            
+            return `An important situation on the pitch at ${minute}'. The players are running, the crowd is shouting. A yuge game, believe me!`;
+        }
+
         async function fetchComments(matchId) {
             try {
                 const res = await fetch(`${API_BASE}/api/matches/${matchId}/comments`);
-                const comments = await res.json();
+                comments = await res.json();
                 const timeline = document.getElementById(`timeline-${matchId}`);
                 if (!timeline) return;
                 
@@ -714,7 +890,11 @@
                     return;
                 }
                 
-                const isStatusLive = matchData[currentMatchDayIndex].games.find(g => g.id === matchId)?.status === 'LIVE';
+                const game = matchData[currentMatchDayIndex]?.games?.find(g => g.id === matchId);
+                const team1 = game?.team1 || '';
+                const team2 = game?.team2 || '';
+                const isStatusLive = game?.status === 'LIVE';
+                
                 if (isStatusLive) {
                     const prevCount = loadedCommentCounts[matchId];
                     if (prevCount !== undefined && comments.length !== prevCount) {
@@ -726,10 +906,6 @@
                 } else {
                     loadedCommentCounts[matchId] = comments.length;
                 }
-                
-                const game = matchData[currentMatchDayIndex]?.games?.find(g => g.id === matchId);
-                const team1 = game?.team1 || '';
-                const team2 = game?.team2 || '';
 
                 timeline.innerHTML = comments.map(c => {
                     const evType = (c.event_type || '').toUpperCase();
@@ -748,19 +924,30 @@
                                          (c.minute >= 90 && (rawTextUpper.includes('ENDS') || roastUpper.includes('ENDS') || evType.includes('WHISTLE')));
 
                     let typeEmoji = "";
+                    const isGoal = evType.includes('GOAL');
+                    const isCard = evType.includes('CARD');
+                    const isSub = evType.includes('SUB') || evType.includes('CHANGE');
+                    const isChance = evType.includes('CHANCE') || evType.includes('MISS') || evType.includes('OFF TARGET');
+
                     if (isMatchEnded) typeEmoji = "🏁 MATCH ENDED";
-                    else if (evType.includes('GOAL')) typeEmoji = "⚽ GOAL!";
-                    else if (evType.includes('CARD')) typeEmoji = "🟨 CARD";
+                    else if (isGoal) typeEmoji = "⚽ GOAL!";
+                    else if (isCard) {
+                        if (rawTextUpper.includes('RED CARD') || roastUpper.includes('RED CARD') || rawTextUpper.includes('ČERVENÁ') || rawTextUpper.includes('DRUHÁ ŽLUTÁ')) {
+                            typeEmoji = "🟥 RED CARD";
+                        } else {
+                            typeEmoji = "🟨 YELLOW CARD";
+                        }
+                    }
+                    else if (isSub) typeEmoji = "🔄 SUBSTITUTION";
+                    else if (isChance) typeEmoji = "🔥 BIG CHANCE";
                     else if (evType.includes('FOUL')) typeEmoji = "⚠️ FOUL";
-                    else if (evType.includes('MISS') || evType.includes('OFF TARGET')) typeEmoji = "❌ MISS";
                     else if (evType.includes('WHISTLE')) typeEmoji = "🎺 WHISTLE";
+                    else typeEmoji = "📢 COMMENT";
                     
                     const videoLink = c.video_url ? 
                         `<div style="margin-top: 5px;"><a href="${c.video_url}" target="_blank" style="color: #ffcc00; font-size: 12px; text-decoration: underline;">🎥 View Highlight Clip</a></div>` : '';
                     
-                    const isGoal = evType.includes('GOAL');
-                    
-                    let eventStyle = `border-left: 3px solid #ffcc00; padding-left: 10px; margin-bottom: 8px; text-align: left;`;
+                    let eventStyle = `border-left: 3px solid #ffcc00; padding-left: 10px; margin-bottom: 8px; text-align: left; background: rgba(255, 204, 0, 0.02);`;
                     let titleStyle = `font-size: 12px; color: #ffcc00; font-weight: bold;`;
                     let textStyle = `font-size: 13px; color: #fff; font-style: italic; margin: 4px 0;`;
 
@@ -772,6 +959,18 @@
                         eventStyle = `border: 3px solid #888888; background: rgba(136, 136, 136, 0.15); padding: 12px; border-radius: 8px; margin-bottom: 10px; text-align: left; box-shadow: 0 0 15px rgba(136, 136, 136, 0.5);`;
                         titleStyle = `font-size: 14px; color: #888888; font-weight: bold; text-shadow: 2px 2px 0 #000;`;
                         textStyle = `font-size: 15px; color: #fff; font-weight: bold; font-style: italic; margin: 6px 0; text-shadow: 1px 1px 0 #000;`;
+                    } else if (isCard) {
+                        const isRed = typeEmoji.includes('🟥');
+                        const cardColor = isRed ? '#ff4444' : '#ffcc00';
+                        const cardBg = isRed ? 'rgba(255, 68, 68, 0.08)' : 'rgba(255, 204, 0, 0.08)';
+                        eventStyle = `border-left: 4px solid ${cardColor}; background: ${cardBg}; padding-left: 10px; margin-bottom: 8px; text-align: left;`;
+                        titleStyle = `font-size: 12px; color: ${cardColor}; font-weight: bold;`;
+                    } else if (isSub) {
+                        eventStyle = `border-left: 4px solid #00cc66; background: rgba(0, 204, 102, 0.08); padding-left: 10px; margin-bottom: 8px; text-align: left;`;
+                        titleStyle = `font-size: 12px; color: #00cc66; font-weight: bold;`;
+                    } else if (isChance) {
+                        eventStyle = `border-left: 4px solid #ff6600; background: rgba(255, 102, 0, 0.08); padding-left: 10px; margin-bottom: 8px; text-align: left;`;
+                        titleStyle = `font-size: 12px; color: #ff6600; font-weight: bold;`;
                     }
 
                     const headerText = typeEmoji ? `[${c.minute}'] ${typeEmoji}` : `[${c.minute}']`;
@@ -1117,6 +1316,9 @@
 
         // Initialize Channel Surfer on load
         updateChannelDisplay();
+
+        // Periodically refresh matches list and clocks in the background
+        setInterval(loadMatches, 20000);
     </script>
 </body>
 </html>
