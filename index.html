@@ -435,6 +435,24 @@
                     games: grouped[date]
                 }));
                 
+                // Sort matchData so that TESTING DAY is first, and all other days are sorted chronologically
+                matchData.sort((a, b) => {
+                    const aIsTest = a.date.toUpperCase().includes("TESTING") || a.date.toUpperCase().includes("FRIENDLY");
+                    const bIsTest = b.date.toUpperCase().includes("TESTING") || b.date.toUpperCase().includes("FRIENDLY");
+                    
+                    if (aIsTest && !bIsTest) return -1;
+                    if (!aIsTest && bIsTest) return 1;
+                    if (aIsTest && bIsTest) return 0;
+                    
+                    try {
+                        const aDateClean = a.date.replace(/^[A-Za-z]+,\s*/, '');
+                        const bDateClean = b.date.replace(/^[A-Za-z]+,\s*/, '');
+                        return new Date(aDateClean) - new Date(bDateClean);
+                    } catch (e) {
+                        return 0;
+                    }
+                });
+                
                 unlockedDays = calculateUnlockedDays();
                 
                 // On localhost, unlock all days and auto-navigate to LIVE matches
