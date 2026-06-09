@@ -408,16 +408,21 @@
                 clearTimeout(timeoutId);
 
                 
-                // Group matches by local date name
+                // Group matches by local date name (testing matches mapped to "TESTING DAY")
                 const grouped = {};
                 rawMatches.forEach(m => {
-                    const localDateObj = getMatchLocalDate(m);
-                    const localDateStr = localDateObj.toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                    });
+                    let localDateStr;
+                    if (m.id.startsWith('match_live') || (m.group_name && (m.group_name.toUpperCase().includes('FRIENDLY') || m.group_name.toUpperCase().includes('TESTING')))) {
+                        localDateStr = "TESTING DAY";
+                    } else {
+                        const localDateObj = getMatchLocalDate(m);
+                        localDateStr = localDateObj.toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                        });
+                    }
                     
                     if (!grouped[localDateStr]) {
                         grouped[localDateStr] = [];
@@ -1003,7 +1008,12 @@
             const nowNy = new Date(nyTimeStr);
             let unlocked = 0;
             for (let i = 0; i < matchData.length; i++) {
-                const dateStr = matchData[i].date.replace(/^[A-Za-z]+,\s*/, '');
+                const dateStrRaw = matchData[i].date;
+                if (dateStrRaw.toUpperCase().includes("TESTING") || dateStrRaw.toUpperCase().includes("FRIENDLY")) {
+                    unlocked = i + 1;
+                    continue;
+                }
+                const dateStr = dateStrRaw.replace(/^[A-Za-z]+,\s*/, '');
                 const matchDate = new Date(dateStr);
                 matchDate.setHours(0,0,0,0);
                 
