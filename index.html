@@ -96,6 +96,62 @@
                 max-width: 100%;
             }
         }
+
+        /* Match Card & Prediction Box Mobile Responsiveness */
+        @media (max-width: 600px) {
+            .match-card {
+                padding: 15px 10px !important;
+                gap: 12px !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+            }
+            .match-teams, .match-predictions, .match-actions {
+                flex: none !important;
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+            .predict-box {
+                padding: 10px 5px !important;
+            }
+            .predict-box span {
+                font-size: 10px !important;
+            }
+            .predict-box div {
+                font-size: 22px !important;
+            }
+        }
+
+        /* Prediction Hub Header & Score Box Mobile Stacking */
+        @media (max-width: 470px) {
+            .prediction-hub-header {
+                flex-direction: column !important;
+                align-items: center !important;
+                text-align: center !important;
+                gap: 8px !important;
+            }
+            .prediction-score-row {
+                flex-direction: column !important;
+                gap: 10px !important;
+            }
+        }
+
+        /* Day Navigation Buttons Stacking */
+        .day-nav-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+        }
+
+        @media (max-width: 412px) {
+            .day-nav-btn {
+                flex: 1 !important;
+                flex-direction: column !important;
+                gap: 4px !important;
+                padding: 10px 15px !important;
+                font-size: 16px !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -148,7 +204,7 @@
 
         <!-- MATCH DAY PREDICTION HUB -->
         <div class="widget" id="match-day-hub" style="background: #1d3557; width: 100%; flex: 1 1 100%; max-width: 1200px; display: flex; flex-direction: column; padding: 25px; box-sizing: border-box; margin: 0 auto 40px auto;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <div class="prediction-hub-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
                 <h3 style="margin: 0; font-size: 22px; color: #ffcc00;">MATCH DAY PREDICTION HUB</h3>
                 <div style="color: #e63946; font-size: 16px; animation: blink 1s infinite; font-weight: bold;">● LIVE UPDATES</div>
             </div>
@@ -161,9 +217,15 @@
                     <div id="match-date-header" style="font-size: 20px; color: #ffcc00; font-weight: bold; text-align: center;">
                         THU, JUN 11 - GROUP STAGE
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                        <button class="sound-btn" onclick="prevDay()" style="background: #222; border: 2px solid #4b6f93; color: #ffcc00; font-family: inherit; font-size: 18px; cursor: pointer; padding: 12px 24px; margin: 0; width: auto; font-weight: bold;">◀ PREV</button>
-                        <button class="sound-btn" onclick="nextDay()" style="background: #222; border: 2px solid #4b6f93; color: #ffcc00; font-family: inherit; font-size: 18px; cursor: pointer; padding: 12px 24px; margin: 0; width: auto; font-weight: bold;">NEXT ▶</button>
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px;">
+                        <button class="sound-btn day-nav-btn" onclick="prevDay()" style="background: #222; border: 2px solid #4b6f93; color: #ffcc00; font-family: inherit; font-size: 18px; cursor: pointer; padding: 12px 24px; margin: 0; width: auto; font-weight: bold;">
+                            <span>◀</span>
+                            <span>PREV</span>
+                        </button>
+                        <button class="sound-btn day-nav-btn" onclick="nextDay()" style="background: #222; border: 2px solid #4b6f93; color: #ffcc00; font-family: inherit; font-size: 18px; cursor: pointer; padding: 12px 24px; margin: 0; width: auto; font-weight: bold;">
+                            <span>NEXT</span>
+                            <span>▶</span>
+                        </button>
                     </div>
                 </div>
                 
@@ -324,6 +386,7 @@
         let activePollers = {};
         let loadedCommentCounts = {}; // Track loaded comment counts to avoid refresh loops
         let unlockedDays = 1;
+        let urlParamsHandled = false;
 
         function getMatchLocalDate(m) {
             if (m.kickoff_time) {
@@ -353,6 +416,42 @@
             'colombia': 'col', 'england': 'eng', 'norway': 'nor', 'chile': 'chi'
         };
 
+        const teamIsoCodes = {
+            'saudi arabia': 'sa', 'senegal': 'sn', 'hungary': 'hu', 'kazakhstan': 'kz',
+            'mexico': 'mx', 'south africa': 'za', 'korea republic': 'kr', 'czechia': 'cz',
+            'canada': 'ca', 'bosnia and herzegovina': 'ba', 'usa': 'us', 'paraguay': 'py',
+            'haiti': 'ht', 'scotland': 'gb-sct', 'australia': 'au', 'türkiye': 'tr',
+            'brazil': 'br', 'morocco': 'ma', 'qatar': 'qa', 'switzerland': 'ch',
+            'côte d\'ivoire': 'ci', 'cote d\'ivoire': 'ci', 'ecuador': 'ec', 'germany': 'de', 'curaçao': 'cw',
+            'netherlands': 'nl', 'japan': 'jp', 'sweden': 'se', 'tunisia': 'tn',
+            'uruguay': 'uy', 'spain': 'es', 'cabo verde': 'cv', 'ir iran': 'ir',
+            'new zealand': 'nz', 'belgium': 'be', 'egypt': 'eg', 'france': 'fr',
+            'iraq': 'iq', 'argentina': 'ar', 'algeria': 'dz', 'austria': 'at',
+            'jordan': 'jo', 'ghana': 'gh', 'panama': 'pa', 'croatia': 'hr',
+            'portugal': 'pt', 'congo dr': 'cd', 'dr congo': 'cd', 'uzbekistan': 'uz',
+            'colombia': 'co', 'england': 'gb-eng', 'norway': 'no', 'chile': 'cl'
+        };
+
+        function getFlagImgUrl(teamName) {
+            const name = teamName.toLowerCase().trim();
+            if (name === 'england') {
+                return 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3f4-e0067-e0062-e0065-e006e-e0067-e007f.svg';
+            }
+            if (name === 'scotland') {
+                return 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3f4-e0067-e0062-e0073-e0063-e0074-e007f.svg';
+            }
+            if (name === 'wales') {
+                return 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3f4-e0067-e0062-e0077-e006c-e0073-e007f.svg';
+            }
+            const iso = teamIsoCodes[name];
+            if (!iso) {
+                return `https://placehold.co/50x35/222/fff?text=${encodeURIComponent(teamName)}`;
+            }
+            const code1 = (iso.charCodeAt(0) + 127397).toString(16);
+            const code2 = (iso.charCodeAt(1) + 127397).toString(16);
+            return `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${code1}-${code2}.svg`;
+        }
+
         function getMatchSlug(game) {
             if (game.polymarket_url) {
                 const match = game.polymarket_url.match(/(?:fifwc|fif)-([a-z0-9]+)-([a-z0-9]+)-\d{4}/i);
@@ -363,6 +462,20 @@
             const t1 = teamAbbrs[game.team1.toLowerCase().trim()] || game.team1.substring(0, 3).toLowerCase();
             const t2 = teamAbbrs[game.team2.toLowerCase().trim()] || game.team2.substring(0, 3).toLowerCase();
             return `${t1}_vs_${t2}`;
+        }
+
+        function getAudioFilename(team1, team2) {
+            const cleanName = (name) => {
+                let n = name.toLowerCase().trim();
+                if (n === 'korea republic') return 'south_korea';
+                if (n === 'saudi arabia') return 'saudi_arabia';
+                if (n === 'south africa') return 'south_africa';
+                if (n === 'ir iran') return 'iran';
+                if (n === 'congo dr' || n === 'dr congo') return 'congo_dr';
+                if (n.includes("côte d'ivoire") || n.includes("cote d'ivoire")) return 'cote_divoire';
+                return n.replace(/ /g, '_');
+            };
+            return `assets/audio/${cleanName(team1)}_vs_${cleanName(team2)}.mp3`;
         }
 
         async function loadMatches() {
@@ -528,6 +641,7 @@
         }
 
         function handleUrlParameters() {
+            if (urlParamsHandled) return;
             const urlParams = new URLSearchParams(window.location.search);
             const targetMatchId = urlParams.get('match');
             if (!targetMatchId) return;
@@ -547,6 +661,7 @@
             }
             
             if (foundDayIndex !== -1 && actualGameId) {
+                urlParamsHandled = true;
                 if (foundDayIndex >= unlockedDays) {
                     unlockedDays = foundDayIndex + 1;
                 }
@@ -557,7 +672,9 @@
                     if (matchCard) {
                         matchCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         matchCard.style.borderColor = '#ffcc00';
-                        toggleComments(actualGameId);
+                        if (!activePollers[actualGameId]) {
+                            toggleComments(actualGameId);
+                        }
                     }
                 }, 500);
             }
@@ -590,8 +707,12 @@
             
             dayData.games.forEach((game, i) => {
                 const matchId = game.id;
-                const flag1 = `assets/flags/${game.team1}.png`;
-                const flag2 = `assets/flags/${game.team2}.png`;
+                const flag1 = getFlagImgUrl(game.team1);
+                const flag2 = getFlagImgUrl(game.team2);
+                
+                const isCommentsOpen = typeof activePollers !== 'undefined' && activePollers[game.id];
+                const commentsBoxDisplay = isCommentsOpen ? 'block' : 'none';
+                const commentsBtnText = isCommentsOpen ? 'CLOSE COMMENTS' : 'LIVE COMMENTARY';
                 
                 // Trumpinho predicted score logic
                 let predScore = "2 - 1";
@@ -600,6 +721,7 @@
                 else if(game.id === "match_live_test") { predScore = "2 - 0"; quote = "Netherlands is strong, but Uzbekistan will be completely outplayed, believe me!"; }
                 else if(game.team1 === "USA") { predScore = "3 - 1"; quote = "We will build a wall in the midfield!"; }
                 else if(game.team1 === "Mexico" || game.team2 === "France") { predScore = "2 - 0"; quote = "Macron is very low energy. Sad!"; }
+                else if(game.team1 === "Korea Republic" || game.team2 === "Korea Republic") { predScore = "0 - 0"; quote = "This has all the hallmarks of a tight and cautious contest. A hard-fought draw, very boring football, believe me!"; }
                 
                 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
                 
@@ -679,9 +801,9 @@
                 }
                 
                 container.innerHTML += `
-                    <div id="match-card-${game.id}" style="background: #020100; border: 2px solid #4b6f93; border-radius: 8px; padding: 25px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px;">
+                    <div id="match-card-${game.id}" class="match-card" style="background: #020100; border: 2px solid #4b6f93; border-radius: 8px; padding: 25px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px;">
                         <!-- Teams -->
-                        <div style="flex: 1.2; min-width: 180px; text-align: center;">
+                        <div class="match-teams" style="flex: 1.2; min-width: 180px; text-align: center;">
                             <div style="display: flex; justify-content: center; align-items: flex-start; gap: 10px;">
                                 <div style="display: flex; flex-direction: column; align-items: center; width: 110px;">
                                     <img src="${flag1}" alt="${game.team1}" style="width: 55px; height: 38px; image-rendering: pixelated; margin-bottom: 5px;" onerror="this.src='https://placehold.co/50x35/222/fff?text=${game.team1}'">
@@ -702,14 +824,14 @@
                         </div>
                         
                         <!-- Predictions & Real Score -->
-                        <div style="flex: 1.2; min-width: 180px; display: flex; flex-direction: column; gap: 10px;">
-                            <div style="display: flex; gap: 10px; width: 100%;">
-                                <div style="flex: 1; background: #1d3557; padding: 15px 10px; border: 2px dashed #ffcc00; text-align: center; border-radius: 8px; display: flex; flex-direction: column; justify-content: center;">
+                        <div class="match-predictions" style="flex: 1.2; min-width: 180px; display: flex; flex-direction: column; gap: 10px;">
+                            <div class="prediction-score-row" style="display: flex; gap: 10px; width: 100%;">
+                                <div class="predict-box predict-box-says" style="flex: 1; background: #1d3557; padding: 15px 10px; border: 2px dashed #ffcc00; text-align: center; border-radius: 8px; display: flex; flex-direction: column; justify-content: center;">
                                     <span style="font-size: 12px; color: #ffcc00; display: block; margin-bottom: 5px; font-weight: bold;">TRUMPINHO SAYS:</span>
                                     <div style="font-size: 26px; font-weight: bold; color: #fff; white-space: nowrap;">${predScore}</div>
                                 </div>
                                 
-                                <div style="flex: 1; background: #1d3557; padding: 15px 10px; border: 2px solid #4b6f93; text-align: center; border-radius: 8px; display: flex; flex-direction: column; justify-content: center;">
+                                <div class="predict-box predict-box-score" style="flex: 1; background: #1d3557; padding: 15px 10px; border: 2px solid #4b6f93; text-align: center; border-radius: 8px; display: flex; flex-direction: column; justify-content: center;">
                                     <span style="font-size: 12px; color: #aaa; display: block; margin-bottom: 5px; font-weight: bold;">LIVE SCORE:</span>
                                     <div id="score-box-${game.id}" style="font-size: 26px; font-weight: bold; color: ${scoreColor}; white-space: nowrap;">${realScore1} - ${realScore2}</div>
                                 </div>
@@ -718,16 +840,16 @@
                         </div>
  
                         <!-- Actions -->
-                        <div style="flex: 1; min-width: 170px; display: flex; flex-direction: column; gap: 8px;">
+                        <div class="match-actions" style="flex: 1; min-width: 170px; display: flex; flex-direction: column; gap: 8px;">
                             <button class="sound-btn" onclick="playMatchAudio('${matchId}')" id="${matchId}-btn" style="background: #ffcc00; color: #000; font-weight: bold; padding: 12px; font-size: 14px; border: 2px solid #000; box-shadow: 2px 2px 0 #000; transition: 0.15s; margin: 0;">HEAR PREDICTION</button>
                             ${polymarketButton}
-                            <button class="sound-btn" onclick="toggleComments('${game.id}')" id="${game.id}-comments-btn" style="background: #1d3557; color: #fff; font-weight: bold; padding: 12px; font-size: 14px; border: 2px solid #000; box-shadow: 2px 2px 0 #000; transition: 0.15s; margin: 0;">LIVE COMMENTARY</button>
+                            <button class="sound-btn" onclick="toggleComments('${game.id}')" id="${game.id}-comments-btn" style="background: #1d3557; color: #fff; font-weight: bold; padding: 12px; font-size: 14px; border: 2px solid #000; box-shadow: 2px 2px 0 #000; transition: 0.15s; margin: 0;">${commentsBtnText}</button>
                             ${simButton}
                         </div>
-                        <audio id="${matchId}-audio" src="assets/audio/${game.team1.toLowerCase().replace(/ /g, '_')}_vs_${game.team2.toLowerCase().replace(/ /g, '_')}.mp3" onerror="this.src='assets/audio/quote_1.mp3'"></audio>
+                        <audio id="${matchId}-audio" src="${getAudioFilename(game.team1, game.team2)}" onerror="this.src='assets/audio/quote_1.mp3'"></audio>
  
                         <!-- Live Commentary Section (Expanded dynamically) -->
-                        <div class="live-commentary-section" id="comments-box-${game.id}" style="width: 100%; margin-top: 15px; border-top: 2px dashed #4b6f93; padding-top: 15px; display: none; text-align: left;">
+                        <div class="live-commentary-section" id="comments-box-${game.id}" style="width: 100%; margin-top: 15px; border-top: 2px dashed #4b6f93; padding-top: 15px; display: ${commentsBoxDisplay}; text-align: left;">
                             <h4 style="color: #ffcc00; font-size: 14px; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
                                 <span class="live-pulse" style="display: inline-block; width: 10px; height: 10px; background: #e63946; border-radius: 50%; animation: blink 1s infinite;"></span>
                                 TRUMPINHO'S LIVE ROASTS:
@@ -875,6 +997,9 @@
                 const timeline = document.getElementById(`timeline-${matchId}`);
                 if (!timeline) return;
                 
+                const isFirstLoad = loadedCommentCounts[matchId] === undefined;
+                const isAtBottom = timeline.scrollHeight - timeline.clientHeight - timeline.scrollTop < 50;
+                
                 if (comments.length === 0) {
                     timeline.innerHTML = `<div style="color: #aaa; font-style: italic; font-size: 13px; text-align: center; padding: 10px 0;">No events yet. Stay tuned, folks!</div>`;
                     loadedCommentCounts[matchId] = 0;
@@ -964,7 +1089,9 @@
                         titleStyle = `font-size: 12px; color: #ff6600; font-weight: bold;`;
                     }
 
-                    const headerText = typeEmoji ? `[${c.minute}'] ${typeEmoji}` : `[${c.minute}']`;
+                    const isNumericMin = c.minute && !isNaN(parseInt(c.minute));
+                    const minDisplay = isNumericMin ? `${c.minute}'` : (c.minute || '');
+                    const headerText = typeEmoji ? `[${minDisplay}] ${typeEmoji}` : `[${minDisplay}]`;
                     
                     return `
                         <div style="${eventStyle}">
@@ -982,7 +1109,9 @@
                     `;
                 }).join('');
                 
-                timeline.scrollTop = timeline.scrollHeight;
+                if (isFirstLoad || isAtBottom) {
+                    timeline.scrollTop = timeline.scrollHeight;
+                }
             } catch (err) {
                 console.error("Error fetching comments:", err);
             }
