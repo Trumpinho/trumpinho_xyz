@@ -673,7 +673,7 @@
                         matchCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         matchCard.style.borderColor = '#ffcc00';
                         if (!activePollers[actualGameId]) {
-                            toggleComments(actualGameId);
+                             toggleComments(actualGameId);
                         }
                     }
                 }, 500);
@@ -719,7 +719,8 @@
                 let quote = "A very tough match. Believe me!";
                 if(game.id === "match_live_today_3") { predScore = "0 - 2"; }
                 else if(game.id === "match_live_test") { predScore = "2 - 0"; quote = "Netherlands is strong, but Uzbekistan will be completely outplayed, believe me!"; }
-                else if(game.team1 === "USA") { predScore = "3 - 1"; quote = "We will build a wall in the midfield!"; }
+                else if(game.team1 === "USA") { predScore = "2 - 1"; quote = "Our great USA boys—my guys—are starting their journey in Los Angeles today! We have the best team, and Christian Pulisic is a superstar, absolute winner! Paraguay has a decent defense, but their attack is pathetic—0.78 goals per game, the lowest in the whole tournament! We have some injuries, Tyler Adams is out, but my boys will dominate. Pochettino is using my winning tactics. USA wins 2-1, believe me!"; }
+                else if(game.team1 === "Canada") { predScore = "1 - 1"; quote = "Canada is co-hosting the World Cup, but let's be honest, they are just riding our coattails! They bring the snow, we bring the winning! Their captain, Alphonso Davies, is out. Very soft, no stamina! And Bosnia? They have Edin Dzeko, who is forty years old! Forty, can you believe it? Very old, very slow! Canada can't beat European teams on the big stage, so it’s going to be a hard-fought draw. 1-1, very average, but my prediction will be 100% perfect, believe me!"; }
                 else if(game.team1 === "Mexico" || game.team2 === "France") { predScore = "2 - 0"; quote = "Macron is very low energy. Sad!"; }
                 else if(game.team1 === "Korea Republic" || game.team2 === "Korea Republic") { predScore = "0 - 0"; quote = "This has all the hallmarks of a tight and cautious contest. A hard-fought draw, very boring football, believe me!"; }
                 
@@ -840,7 +841,6 @@
                             <button class="sound-btn" onclick="toggleComments('${game.id}')" id="${game.id}-comments-btn" style="background: #1d3557; color: #fff; font-weight: bold; padding: 12px; font-size: 14px; border: 2px solid #000; box-shadow: 2px 2px 0 #000; transition: 0.15s; margin: 0;">${commentsBtnText}</button>
                             ${simButton}
                         </div>
-                        <audio id="${matchId}-audio" src="${getAudioFilename(game.team1, game.team2)}" onerror="this.src='assets/audio/quote_1.mp3'"></audio>
  
                         <!-- Live Commentary Section (Expanded dynamically) -->
                         <div class="live-commentary-section" id="comments-box-${game.id}" style="width: 100%; margin-top: 15px; border-top: 2px dashed #4b6f93; padding-top: 15px; display: ${commentsBoxDisplay}; text-align: left;">
@@ -1042,7 +1042,13 @@
                     if (isMatchEnded) typeEmoji = "🏁 MATCH ENDED";
                     else if (isGoal) typeEmoji = "⚽ GOAL!";
                     else if (isCard) {
-                        if (rawTextUpper.includes('RED CARD') || roastUpper.includes('RED CARD') || rawTextUpper.includes('ČERVENÁ') || rawTextUpper.includes('DRUHÁ ŽLUTÁ')) {
+                        if (rawTextUpper.includes('RED') || 
+                            roastUpper.includes('RED') || 
+                            rawTextUpper.includes('ČERVEN') || 
+                            rawTextUpper.includes('VYLUČ') || 
+                            rawTextUpper.includes('VYLOV') || 
+                            rawTextUpper.includes('DRUH') || 
+                            rawTextUpper.includes('SECOND YELLOW')) {
                             typeEmoji = "🟥 RED CARD";
                         } else {
                             typeEmoji = "🟨 YELLOW CARD";
