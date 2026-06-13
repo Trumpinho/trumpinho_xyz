@@ -1119,8 +1119,7 @@
 
         function calculateUnlockedDays() {
             if (matchData.length === 0) return 1;
-            const nyTimeStr = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
-            const nowNy = new Date(nyTimeStr);
+            const nowLocal = new Date();
             let unlocked = 0;
             for (let i = 0; i < matchData.length; i++) {
                 const dateStrRaw = matchData[i].date;
@@ -1132,9 +1131,9 @@
                 const matchDate = new Date(dateStr);
                 matchDate.setHours(0,0,0,0);
                 
-                const todayNy = new Date(nowNy.getFullYear(), nowNy.getMonth(), nowNy.getDate());
+                const todayLocal = new Date(nowLocal.getFullYear(), nowLocal.getMonth(), nowLocal.getDate());
                 
-                if (todayNy >= matchDate) {
+                if (todayLocal >= matchDate) {
                     unlocked = i + 1;
                 }
             }
