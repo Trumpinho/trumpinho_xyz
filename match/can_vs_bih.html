@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trumpinho Match Center - Canada vs Bosnia and Herzegovina</title>
+    <!-- Twitter card and Open Graph metadata -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@trumpinho_xyz">
+    <meta name="twitter:title" content="Trumpinho Predicts: Canada vs Bosnia and Herzegovina!">
+    <meta name="twitter:description" content="My football brain is yuge. Hear my official prediction for Canada vs Bosnia and Herzegovina at the World Cup prediction hub!">
+    <meta name="twitter:image" content="https://trumpinho.xyz/assets/prediction_teaser.png">
+    
+    <meta property="og:title" content="Trumpinho Predicts: Canada vs Bosnia and Herzegovina!">
+    <meta property="og:description" content="My football brain is yuge. Hear my official prediction for Canada vs Bosnia and Herzegovina!">
+    <meta property="og:image" content="https://trumpinho.xyz/assets/prediction_teaser.png">
+    <meta property="og:url" content="https://trumpinho.xyz/match/can_vs_bih.html">
+
+    <link rel="icon" type="image/png" href="../assets/sprites/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        * { box-sizing: border-box; }
+        body { 
+            background: radial-gradient(circle at top, #4b6f93 0%, #1d3557 100%); 
+            background-attachment: fixed; 
+            min-height: 100vh; 
+            color: #fff; 
+            font-family: 'Press Start 2P', monospace; 
+            text-align: center; 
+            margin: 0; 
+            overflow-x: hidden; 
+            padding-bottom: 60px; 
+            position: relative; 
+        }
+        
+        .fake-news-ticker { 
+            background: #e63946; 
+            color: #fff; 
+            padding: 12px 10px; 
+            font-size: 10px; 
+            font-weight: bold; 
+            border-bottom: 4px solid #000; 
+            display: flex; 
+            align-items: center; 
+            position: fixed; 
+            top: 0; 
+            width: 100%; 
+            z-index: 101; 
+        }
+        .ticker-badge { 
+            background: #ffcc00; 
+            color: #000; 
+            padding: 6px 16px; 
+            z-index: 10; 
+            border: 3px solid #000; 
+            border-radius: 6px; 
+            box-shadow: 3px 3px 0 #000; 
+            font-weight: bold; 
+            margin-right: 15px; 
+            letter-spacing: 1px; 
+            flex-shrink: 0; 
+        }
+
+        .main-stage { 
+            padding: 100px 20px 40px 20px; 
+            background: transparent; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative; 
+            z-index: 2;
+        }
+
+        .back-btn {
+            align-self: flex-start;
+            color: #000; 
+            text-decoration: none; 
+            font-size: 10px; 
+            border: 3px solid #000; 
+            padding: 10px 15px; 
+            border-radius: 6px; 
+            transition: 0.15s; 
+            background: #ffcc00; 
+            box-shadow: 4px 4px 0 #000; 
+            font-weight: bold; 
+            margin-bottom: 25px;
+        }
+        .back-btn:hover {
+            background: #e63946; 
+            color: #fff; 
+            transform: translate(2px, 2px); 
+            box-shadow: 2px 2px 0 #000;
+        }
+
+        .match-header {
+            width: 100%;
+            background: rgba(0,0,0,0.5);
+            border: 4px solid #ffcc00;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .teams-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 16px;
+        }
+        .flag-icon {
+            width: 40px;
+            height: auto;
+            border: 2px solid #000;
+            border-radius: 4px;
+        }
+
+        .match-badge {
+            padding: 6px 14px;
+            font-size: 10px;
+            border: 3px solid #000;
+            border-radius: 6px;
+            box-shadow: 3px 3px 0 #000;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .badge-upcoming { background: #ffcc00; color: #000; }
+        .badge-live { background: #e63946; color: #fff; animation: pulse-blink 1s infinite alternate; }
+        .badge-final { background: #555; color: #fff; }
+
+        @keyframes pulse-blink {
+            0% { opacity: 1; box-shadow: 0 0 10px rgba(230,57,70,0.8); }
+            100% { opacity: 0.7; box-shadow: 0 0 2px rgba(230,57,70,0.2); }
+        }
+
+        .match-layout {
+            display: flex;
+            width: 100%;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .left-col {
+            flex: 1.2;
+            min-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .right-col {
+            flex: 1.5;
+            min-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Video / TV Container */
+        .video-box {
+            background: #000;
+            border: 6px solid #4b6f93;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5), inset 0 0 30px rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .video-box::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 10;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+        .video-player {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .video-placeholder {
+            padding: 20px;
+            font-size: 10px;
+            color: #ffcc00;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* Visual Football Field */
+        .pitch-card {
+            background: rgba(0,0,0,0.5);
+            border: 4px solid #ffcc00;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .pitch-title {
+            font-size: 10px;
+            color: #ffcc00;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        .pitch-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1.4;
+            background: linear-gradient(180deg, #2a5f36 0%, #1e4d2b 100%);
+            border: 4px solid #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.6);
+        }
+        .midfield-line {
+            position: absolute;
+            top: 0; bottom: 0; left: 50%;
+            width: 2px;
+            background: rgba(255,255,255,0.4);
+            pointer-events: none;
+        }
+        .center-circle {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 80px; height: 80px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        .penalty-area-left {
+            position: absolute;
+            top: 20%; left: 0;
+            width: 15%; height: 60%;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-left: none;
+            pointer-events: none;
+        }
+        .penalty-area-right {
+            position: absolute;
+            top: 20%; right: 0;
+            width: 15%; height: 60%;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-right: none;
+            pointer-events: none;
+        }
+        
+        .half-pitch {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            padding: 10px 5px;
+            position: relative;
+        }
+        .pitch-col {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            align-items: center;
+            flex: 1;
+        }
+
+        .player-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            z-index: 5;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        .player-node:hover {
+            transform: scale(1.15);
+        }
+        .player-jersey {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 7px;
+            font-weight: bold;
+            color: #fff;
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+            text-shadow: 1px 1px 0 #000;
+        }
+        .jersey-t1 { background: #e63946; }
+        .jersey-t2 { background: #ffcc00; color: #000; text-shadow: none; border-color: #000; }
+        
+        .player-name {
+            font-size: 7px;
+            font-family: monospace;
+            color: #fff;
+            background: rgba(0,0,0,0.7);
+            padding: 1px 3px;
+            border-radius: 3px;
+            border: 1px solid rgba(255,255,255,0.2);
+            white-space: nowrap;
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Win Probability Bar */
+        .probability-box {
+            background: rgba(0,0,0,0.5);
+            border: 4px solid #ffcc00;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: left;
+        }
+        .prob-bar {
+            display: flex;
+            height: 32px;
+            border: 3px solid #000;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #000;
+            margin-top: 10px;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
+        }
+        .prob-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            font-weight: bold;
+            transition: width 0.5s ease-in-out;
+        }
+        .prob-t1 { background: #ffcc00; color: #000; }
+        .prob-draw { background: #4b6f93; color: #fff; }
+        .prob-t2 { background: #e63946; color: #fff; }
+
+        /* Raid on X Widget */
+        .raid-box {
+            background: rgba(0,0,0,0.5);
+            border: 4px solid #ffcc00;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        .raid-title {
+            font-size: 12px;
+            color: #ffcc00;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        .raid-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .raid-btn {
+            flex: 1;
+            min-width: 140px;
+            font-family: inherit;
+            font-size: 9px;
+            font-weight: bold;
+            padding: 12px;
+            border: 3px solid #000;
+            border-radius: 6px;
+            box-shadow: 3px 3px 0 #000;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .raid-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0 #000;
+        }
+        .btn-agree { background: #2a9d8f; color: #fff; }
+        .btn-disagree { background: #e63946; color: #fff; }
+
+        /* Scoreboard & Comments */
+        .scoreboard-card {
+            background: rgba(0,0,0,0.5);
+            border: 4px solid #ffcc00;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        .score-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .score-display {
+            font-size: 32px;
+            font-weight: bold;
+            background: #1d3557;
+            border: 3px solid #4b6f93;
+            border-radius: 8px;
+            padding: 10px 20px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .timeline-container {
+            background: rgba(0,0,0,0.6);
+            border: 2px solid #4b6f93;
+            border-radius: 6px;
+            padding: 12px;
+            text-align: left;
+            max-height: 250px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-family: monospace;
+            font-size: 9px;
+            line-height: 1.5;
+        }
+        
+        .betting-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .bet-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            font-family: inherit;
+            font-size: 9px;
+            font-weight: bold;
+            padding: 12px;
+            border: 3px solid #000;
+            border-radius: 6px;
+            box-shadow: 3px 3px 0 #000;
+            text-decoration: none;
+            color: #000;
+            transition: 0.15s;
+        }
+        .bet-btn:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0 #000;
+        }
+        .btn-poly { background: #5a8fee; color: #fff; }
+        .btn-kaishi { background: #ffcc00; color: #000; }
+
+        /* Roast Modal Overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-box {
+            background: #1d3557;
+            border: 4px solid #ffcc00;
+            border-radius: 10px;
+            padding: 25px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            position: relative;
+        }
+        .modal-character {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #ffcc00;
+            background: #1d3557;
+            margin: 0 auto 15px auto;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-img {
+            width: 90%;
+            height: auto;
+            image-rendering: pixelated;
+        }
+        .modal-text {
+            font-size: 9px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            background: #0f1c2e;
+            border: 2px dashed #4b6f93;
+            padding: 15px;
+            border-radius: 6px;
+            color: #ffcc00;
+        }
+        .modal-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        /* Particle system background */
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: hidden; }
+        .particle { position: absolute; width: 40px; height: auto; image-rendering: pixelated; animation: fall linear infinite; }
+        @keyframes fall { 0% { transform: translateY(-50px) rotate(0deg); opacity: 0.8; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .match-layout { flex-direction: column; }
+            .teams-title { font-size: 12px; }
+            .scoreboard-card { order: -1; } /* Scoreboard on top on mobile */
+            .video-box { aspect-ratio: 16/9; }
+            .raid-buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fake News Ticker -->
+    <div class="fake-news-ticker">
+        <div class="ticker-badge">FAKE NEWS TICKER</div>
+        <div style="white-space: nowrap; overflow: hidden; position: relative; width: 100%; height: 15px;">
+            <div style="position: absolute; width: 100%; height: 100%; margin: 0; text-align: left; transform: translateX(100%); animation: scroll-left 25s linear infinite; font-size: 9px;">
+                🚨 BREAKING: TRUMPINHO OFFICIALLY DECLARES HIS FOOTBALL BRAIN IS THE LARGEST IN THE WORLD... 🚨
+            </div>
+        </div>
+    </div>
+    <style>
+        @keyframes scroll-left {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+    </style>
+
+    <div class="main-stage">
+        <!-- Back Button -->
+        <a href="../index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> BACK TO HOME</a>
+
+        <!-- Header -->
+        <div class="match-header">
+            <div class="teams-title">
+                <img id="team1-header-flag" class="flag-icon" src="">
+                <span>Canada</span>
+                <span style="color: #ffcc00; font-size: 14px;">VS</span>
+                <span>Bosnia and Herzegovina</span>
+                <img id="team2-header-flag" class="flag-icon" src="">
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div id="status-badge" class="match-badge badge-upcoming">FINISHED</div>
+                <div id="match-clock" style="font-size: 12px; font-weight: bold; color: #ffcc00; display: none;">--:--</div>
+            </div>
+        </div>
+
+        <!-- Layout Grid -->
+        <div class="match-layout">
+            
+            <!-- Left Column: Video, Probabilities, Raid -->
+            <div class="left-col">
+                <!-- Video Box -->
+                <div class="video-box">
+                    <video id="prediction-video" class="video-player" controls preload="metadata" muted playsinline>
+                        <source src="../assets/video/can_vs_bih.mp4" type="video/mp4">
+                        <!-- Fallback if video is not yet uploaded -->
+                        <div class="video-placeholder">
+                            <i class="fa-solid fa-circle-play" style="font-size: 40px; color: #ffcc00; margin-bottom: 10px; display: block;"></i>
+                            <strong>PREDICTION VIDEO LOAD ERROR</strong><br>
+                            <span style="font-size: 7px; color: #aaa;">Trumpinho's official video prediction will load here. If not uploaded yet, a fallback broadcast screen is shown.</span>
+                        </div>
+                    </video>
+                </div>
+
+                <!-- Live Probability Gauge -->
+                <div class="probability-box">
+                    <span style="font-size: 8px; color: #ffcc00; font-weight: bold;">POLYMARKET WIN PROBABILITIES</span>
+                    <div class="prob-bar">
+                        <div id="prob-t1" class="prob-section prob-t1" style="width: 45%;">Canada (45%)</div>
+                        <div id="prob-draw" class="prob-section prob-draw" style="width: 20%;">DRAW (20%)</div>
+                        <div id="prob-t2" class="prob-section prob-t2" style="width: 35%;">Bosnia and Herzegovina (35%)</div>
+                    </div>
+                </div>
+
+                <!-- X Raid Share Box -->
+                <div class="raid-box">
+                    <div class="raid-title">DO YOU AGREE WITH TRUMPINHO?</div>
+                    <div class="raid-buttons">
+                        <button onclick="handleAgree()" class="raid-btn btn-agree"><i class="fa-solid fa-thumbs-up"></i> I AGREE (PUMP)</button>
+                        <button onclick="handleDisagree()" class="raid-btn btn-disagree"><i class="fa-solid fa-thumbs-down"></i> DISAGREE (DUMP)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Lineups, Scoreboard, Betting -->
+            <div class="right-col">
+                
+                <!-- Scoreboard -->
+                <div class="scoreboard-card">
+                    <div style="font-size: 10px; color: #aaa; text-transform: uppercase;">TRUMPINHO'S PREDICTION</div>
+                    <div style="font-size: 18px; font-weight: bold; color: #ffcc00; margin-top: 8px;">1 - 1</div>
+                    
+                    <div style="border-top: 1px dashed #4b6f93; margin: 15px 0; padding-top: 15px;">
+                        <span style="font-size: 8px; color: #aaa; text-transform: uppercase;">LIVE SCOREBOARD</span>
+                        <div class="score-row">
+                            <span style="font-size: 10px; font-weight: bold;">Canada</span>
+                            <span id="live-score-display" class="score-display">-- - --</span>
+                            <span style="font-size: 10px; font-weight: bold;">Bosnia and Herzegovina</span>
+                        </div>
+                    </div>
+
+                    <!-- Live Commentary -->
+                    <div style="text-align: left; margin-top: 20px;">
+                        <span style="font-size: 8px; color: #ffcc00; font-weight: bold; display: block; margin-bottom: 8px;">TRUMPINHO'S LIVE COMMENTARY:</span>
+                        <div id="commentary-timeline" class="timeline-container">
+                            <div style="color: #aaa; font-style: italic; text-align: center; padding: 10px 0;">No comments logged yet. Stay tuned, folks!</div>
+                        </div>
+                    </div>
+
+                    <!-- Betting Buttons -->
+                    <div class="betting-buttons">
+                        <a id="poly-bet-link" href="#" target="_blank" class="bet-btn btn-poly"><i class="fa-solid fa-chart-line"></i> BET ON POLYMARKET</a>
+                        <a id="kaishi-bet-link" href="https://kaishi.fun" target="_blank" class="bet-btn btn-kaishi"><i class="fa-solid fa-coins"></i> TRADE ON KAISHI</a>
+                    </div>
+                </div>
+
+                <!-- Visual Lineups Card -->
+                <div class="pitch-card">
+                    <div class="pitch-title">Canada (4-4-2) vs Bosnia and Herzegovina (4-4-2)</div>
+                    <div class="pitch-container">
+                        <!-- Left Half (Team 1) -->
+                        <div id="t1-lineup-half" class="half-pitch"></div>
+                        
+                        <!-- Midfield elements -->
+                        <div class="midfield-line"></div>
+                        <div class="center-circle"></div>
+                        
+                        <!-- Right Half (Team 2) -->
+                        <div id="t2-lineup-half" class="half-pitch" style="flex-direction: row-reverse;"></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Roast Overlay Modal -->
+    <div id="roast-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-character">
+                <img src="../trump_shush.png" class="modal-img" alt="Trumpinho">
+            </div>
+            <h3 style="color: #e63946; font-size: 14px; margin-bottom: 10px; text-transform: uppercase;">TRUMPINHO ROAST!</h3>
+            <div id="roast-content" class="modal-text"></div>
+            <div class="modal-actions">
+                <button onclick="shareDisagreement()" class="raid-btn btn-disagree" style="font-size: 10px; width: 100%;"><i class="fa-brands fa-x-twitter"></i> POST WRONG OPINION ON X</button>
+                <button onclick="closeRoastModal()" class="raid-btn btn-agree" style="font-size: 10px; width: 100%; background: #ffcc00; color: #000; border-color: #000; box-shadow: 3px 3px 0 #000;">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background Fall Particles -->
+    <div class="particles" id="particles-container"></div>
+
+    <script>
+        const API_BASE = "https://hub.trumpinho.xyz";
+        const MATCH_ID = "match_2";
+        const MATCH_SLUG = "can_vs_bih";
+        const TEAM1_NAME = "Canada";
+        const TEAM2_NAME = "Bosnia and Herzegovina";
+        const PRED_SCORE = "1 - 1";
+
+        const teamIsoCodes = {
+            'saudi arabia': 'sa', 'senegal': 'sn', 'hungary': 'hu', 'kazakhstan': 'kz',
+            'mexico': 'mx', 'south africa': 'za', 'korea republic': 'kr', 'czechia': 'cz',
+            'canada': 'ca', 'bosnia and herzegovina': 'ba', 'usa': 'us', 'paraguay': 'py',
+            'haiti': 'ht', 'scotland': 'gb-sct', 'australia': 'au', 'türkiye': 'tr',
+            'brazil': 'br', 'morocco': 'ma', 'qatar': 'qa', 'switzerland': 'ch',
+            'côte d\'ivoire': 'ci', 'cote d\'ivoire': 'ci', 'ecuador': 'ec', 'germany': 'de', 'curaçao': 'cw',
+            'netherlands': 'nl', 'japan': 'jp', 'sweden': 'se', 'tunisia': 'tn',
+            'uruguay': 'uy', 'spain': 'es', 'cabo verde': 'cv', 'ir iran': 'ir',
+            'new zealand': 'nz', 'belgium': 'be', 'egypt': 'eg', 'france': 'fr',
+            'iraq': 'iq', 'argentina': 'ar', 'algeria': 'dz', 'austria': 'at',
+            'jordan': 'jo', 'ghana': 'gh', 'panama': 'pa', 'croatia': 'hr',
+            'portugal': 'pt', 'congo dr': 'cd', 'dr congo': 'cd', 'uzbekistan': 'uz',
+            'colombia': 'co', 'england': 'gb-eng', 'norway': 'no', 'chile': 'cl'
+        };
+
+        const trumpinhoRoasts = [
+            "Wrong! Total loser opinion. You think you know football? My intelligence is yuge, believe me! RIGGED!",
+            "Excuse me, your prediction is fake news, completely fake! Bosnia and Herzegovina is soft, Canada is strong. Sad!",
+            "You probably listen to the mainstream media. They know nothing about soccer. My simulation is 100% perfect. Period!",
+            "Very low energy! You couldn't even make it past the penalty shootout. Accept my prediction or cry like Sleepy Joe!",
+            "No trophies for you! Your prediction skills are a disaster. Absolute disaster. Go play penalty shootout and practice!"
+        ];
+
+        let selectedRoast = "";
+
+        function getFlagImgUrl(teamName) {
+            const name = teamName.toLowerCase().trim();
+            if (name === 'england') return 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3f4-e0067-e0062-e0065-e006e-e0067-e007f.svg';
+            if (name === 'scotland') return 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3f4-e0067-e0062-e0073-e0063-e0074-e007f.svg';
+            if (name === 'wales') return 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3f4-e0067-e0062-e0077-e006c-e0073-e007f.svg';
+            const iso = teamIsoCodes[name];
+            if (!iso) return `https://placehold.co/50x35/222/fff?text=${encodeURIComponent(teamName)}`;
+            const code1 = (iso.charCodeAt(0) + 127365).toString(16);
+            const code2 = (iso.charCodeAt(1) + 127365).toString(16);
+            return `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${code1}-${code2}.svg`;
+        }
+
+        // Agree Action: share on X
+        function handleAgree() {
+            const tweetText = `I AGREE with @trumpinho_xyz's World Cup prediction! 🏆\n\n⚽ ${TEAM1_NAME} vs ${TEAM2_NAME}\n🔮 Trumpinho says: ${PRED_SCORE}\n\nJoin the winning team: https://trumpinho.xyz/match/${MATCH_SLUG}.html $TRUMPINHO`;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`, '_blank');
+        }
+
+        // Disagree Action: trigger funny roast modal
+        function handleDisagree() {
+            const randomIndex = Math.floor(Math.random() * trumpinhoRoasts.length);
+            selectedRoast = trumpinhoRoasts[randomIndex];
+            document.getElementById('roast-content').innerText = `"${selectedRoast}"`;
+            document.getElementById('roast-modal').style.display = 'flex';
+        }
+
+        function closeRoastModal() {
+            document.getElementById('roast-modal').style.display = 'none';
+        }
+
+        // Share disagreement on X anyway (with roast context)
+        function shareDisagreement() {
+            closeRoastModal();
+            const tweetText = `I disagreed with @trumpinho_xyz's prediction for ${TEAM1_NAME} vs ${TEAM2_NAME} and got roasted! 💀\n\nTrumpinho says:\n"${selectedRoast}"\n\nSee if you can do better: https://trumpinho.xyz/match/${MATCH_SLUG}.html $TRUMPINHO`;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`, '_blank');
+        }
+
+        // Dynamic Lineup Renderer
+        const squadsData = {};
+
+        function renderTacticalLineup(containerId, squad, isLeftTeam) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+
+            if (!squad || !squad.players) {
+                container.innerHTML = "<div style='font-size: 7px; color: #aaa; margin: auto;'>Lineups details locked.</div>";
+                return;
+            }
+
+            const formation = squad.formation || "4-4-2";
+            const jerseyClass = isLeftTeam ? "jersey-t1" : "jersey-t2";
+            
+            // Build visual layout columns based on tactical positions
+            // Columns sequence: Left Team (GK -> DEF -> DM (if any) -> MID -> FW)
+            // Column sequence: Right Team (FW -> MID -> DM (if any) -> DEF -> GK)
+            const playerCategories = [];
+            
+            // Add goalkeeper first (will align based on direction)
+            playerCategories.push({ label: 'gk', players: squad.players.gk || [] });
+            
+            // Formations are parsed like 4-1-4-1 or 5-3-2 or 4-3-3
+            const parts = formation.split("-").map(Number);
+            let categoryIndex = 0;
+            
+            if (squad.players.def) playerCategories.push({ label: 'def', players: squad.players.def });
+            if (squad.players.dm && squad.players.dm.length > 0) {
+                playerCategories.push({ label: 'dm', players: squad.players.dm });
+            }
+            if (squad.players.mid) playerCategories.push({ label: 'mid', players: squad.players.mid });
+            if (squad.players.am && squad.players.am.length > 0) {
+                playerCategories.push({ label: 'am', players: squad.players.am });
+            }
+            if (squad.players.fw) playerCategories.push({ label: 'fw', players: squad.players.fw });
+
+            // Draw player elements into columns
+            playerCategories.forEach((cat, colIdx) => {
+                const col = document.createElement("div");
+                col.className = "pitch-col";
+                
+                cat.players.forEach((player, pIdx) => {
+                    const node = document.createElement("div");
+                    node.className = "player-node";
+                    
+                    // Simple initials/number logic
+                    let shortName = player.split(" ").pop().substring(0, 3).toUpperCase();
+                    let jerseyNum = (colIdx * 3 + pIdx + 1) % 99; // Mock jersey number
+                    
+                    node.innerHTML = `
+                        <div class="player-jersey ${jerseyClass}">${jerseyNum}</div>
+                        <div class="player-name">${player}</div>
+                    `;
+                    col.appendChild(node);
+                });
+                
+                container.appendChild(col);
+            });
+        }
+
+        // Live stats polling (Updates scoreboard & timeline roasts)
+        async function fetchMatchStatus() {
+            try {
+                const res = await fetch(`${API_BASE}/api/matches?t=${Date.now()}`);
+                const matches = await res.json();
+                const match = matches.find(m => m.id === MATCH_ID);
+                
+                if (match) {
+                    // Update score
+                    if (match.status === 'LIVE' || match.status === 'FINISHED') {
+                        document.getElementById('live-score-display').innerText = `${match.score1} - ${match.score2}`;
+                    } else {
+                        document.getElementById('live-score-display').innerText = `-- - --`;
+                    }
+
+                    // Update clock and status badge
+                    const badge = document.getElementById('status-badge');
+                    const clock = document.getElementById('match-clock');
+                    
+                    badge.className = "match-badge";
+                    if (match.status === 'LIVE') {
+                        badge.classList.add('badge-live');
+                        badge.innerText = "LIVE";
+                        clock.style.display = "block";
+                        clock.innerText = match.match_clock || "00'';";
+                    } else if (match.status === 'FINISHED') {
+                        badge.classList.add('badge-final');
+                        badge.innerText = "FINAL";
+                        clock.style.display = "none";
+                    } else {
+                        badge.classList.add('badge-upcoming');
+                        badge.innerText = "UPCOMING";
+                        clock.style.display = "block";
+                        clock.innerText = match.kickoff_time ? new Date(match.kickoff_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "KICKOFF";
+                    }
+
+                    // Update betting links
+                    if (match.polymarket_url) {
+                        document.getElementById('poly-bet-link').href = match.polymarket_url;
+                        document.getElementById('poly-bet-link').style.display = "block";
+                    } else {
+                        document.getElementById('poly-bet-link').style.display = "none";
+                    }
+                }
+            } catch (err) {
+                console.log("Error checking live stats:", err);
+            }
+        }
+
+        function formatScoreText(text, team1, team2) {
+            if (!text || !team1 || !team2) return text;
+            
+            const escapeRegex = (string) => string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const t1Esc = escapeRegex(team1);
+            const t2Esc = escapeRegex(team2);
+
+            // Match Team1 score, Team2 score
+            const regex1 = new RegExp(`(${t1Esc})\\s+(\\d+),\\s*(${t2Esc})\\s+(\\d+)`, 'gi');
+            // Match Team2 score, Team1 score
+            const regex2 = new RegExp(`(${t2Esc})\\s+(\\d+),\\s*(${t1Esc})\\s+(\\d+)`, 'gi');
+
+            let formatted = text;
+            formatted = formatted.replace(regex1, (match, g1, g2, g3, g4) => {
+                return `${g1} - ${g3} ${g2}:${g4}`;
+            });
+            formatted = formatted.replace(regex2, (match, g1, g2, g3, g4) => {
+                return `${g3} - ${g1} ${g4}:${g2}`;
+            });
+
+            return formatted;
+        }
+
+        // Dynamic Comments / Roasts Polling
+        async function fetchLiveComments() {
+            try {
+                const res = await fetch(`${API_BASE}/api/matches/${MATCH_ID}/comments?t=${Date.now()}`);
+                const comments = await res.json();
+                const timeline = document.getElementById('commentary-timeline');
+                if (!timeline) return;
+                
+                if (!comments || comments.length === 0) {
+                    timeline.innerHTML = `<div style="color: #aaa; font-style: italic; text-align: center; padding: 10px 0;">No comments logged yet. Stay tuned, folks!</div>`;
+                    return;
+                }
+                
+                timeline.innerHTML = comments.map(c => {
+                    const evType = (c.event_type || '').toUpperCase();
+                    
+                    const formattedRoast = formatScoreText(c.trumpinho_roast || '', TEAM1_NAME, TEAM2_NAME);
+                    const formattedRaw = formatScoreText(c.raw_text || '', TEAM1_NAME, TEAM2_NAME);
+
+                    const rawTextUpper = formattedRaw.toUpperCase();
+                    const roastUpper = formattedRoast.toUpperCase();
+                    const isMatchEnded = rawTextUpper.includes('MATCH END') ||
+                                         rawTextUpper.includes('SECOND HALF END') ||
+                                         rawTextUpper.includes('FULL TIME') ||
+                                         roastUpper.includes('MATCH END') ||
+                                         roastUpper.includes('SECOND HALF END') ||
+                                         roastUpper.includes('FULL TIME') ||
+                                         (c.minute >= 90 && (rawTextUpper.includes('ENDS') || roastUpper.includes('ENDS') || evType.includes('WHISTLE')));
+
+                    let typeEmoji = "";
+                    const isGoal = evType.includes('GOAL');
+                    const isCard = evType.includes('CARD');
+                    const isSub = evType.includes('SUB') || evType.includes('CHANGE');
+                    const isChance = evType.includes('CHANCE') || evType.includes('MISS') || evType.includes('OFF TARGET');
+
+                    if (isMatchEnded) typeEmoji = "🏁 MATCH ENDED";
+                    else if (isGoal) typeEmoji = "⚽ GOAL!";
+                    else if (isCard) {
+                        if (rawTextUpper.includes('RED') || 
+                            roastUpper.includes('RED') || 
+                            rawTextUpper.includes('ČERVEN') || 
+                            rawTextUpper.includes('VYLUČ') || 
+                            rawTextUpper.includes('VYLOV') || 
+                            rawTextUpper.includes('DRUH') || 
+                            rawTextUpper.includes('SECOND YELLOW')) {
+                            typeEmoji = "🟥 RED CARD";
+                        } else {
+                            typeEmoji = "🟨 YELLOW CARD";
+                        }
+                    }
+                    else if (isSub) typeEmoji = "🔄 SUBSTITUTION";
+                    else if (isChance) typeEmoji = "🔥 BIG CHANCE";
+                    else if (evType.includes('FOUL')) typeEmoji = "⚠️ FOUL";
+                    else if (evType.includes('WHISTLE')) typeEmoji = "🎺 WHISTLE";
+                    else typeEmoji = "📢 COMMENT";
+                    
+                    const videoLink = c.video_url ? 
+                        `<div style="margin-top: 5px;"><a href="${c.video_url}" target="_blank" style="color: #ffcc00; font-size: 12px; text-decoration: underline;">🎥 View Highlight Clip</a></div>` : '';
+                    
+                    let eventStyle = `border-left: 3px solid #ffcc00; padding-left: 10px; margin-bottom: 8px; text-align: left; background: rgba(255, 204, 0, 0.02);`;
+                    let titleStyle = `font-size: 12px; color: #ffcc00; font-weight: bold;`;
+                    let textStyle = `font-size: 13px; color: #fff; font-style: italic; margin: 4px 0;`;
+
+                    if (isGoal) {
+                        eventStyle = `border: 3px solid #ffcc00; background: rgba(255, 204, 0, 0.15); padding: 12px; border-radius: 8px; margin-bottom: 10px; text-align: left; box-shadow: 0 0 15px rgba(255, 204, 0, 0.5);`;
+                        titleStyle = `font-size: 14px; color: #ffcc00; font-weight: bold; text-shadow: 2px 2px 0 #000;`;
+                        textStyle = `font-size: 15px; color: #fff; font-weight: bold; font-style: italic; margin: 6px 0; text-shadow: 1px 1px 0 #000;`;
+                    } else if (isMatchEnded) {
+                        eventStyle = `border: 3px solid #888888; background: rgba(136, 136, 136, 0.15); padding: 12px; border-radius: 8px; margin-bottom: 10px; text-align: left; box-shadow: 0 0 15px rgba(136, 136, 136, 0.5);`;
+                        titleStyle = `font-size: 14px; color: #888888; font-weight: bold; text-shadow: 2px 2px 0 #000;`;
+                        textStyle = `font-size: 15px; color: #fff; font-weight: bold; font-style: italic; margin: 6px 0; text-shadow: 1px 1px 0 #000;`;
+                    } else if (isCard) {
+                        const isRed = typeEmoji.includes('🟥');
+                        const cardColor = isRed ? '#ff4444' : '#ffcc00';
+                        const cardBg = isRed ? 'rgba(255, 68, 68, 0.08)' : 'rgba(255, 204, 0, 0.08)';
+                        eventStyle = `border-left: 4px solid ${cardColor}; background: ${cardBg}; padding-left: 10px; margin-bottom: 8px; text-align: left;`;
+                        titleStyle = `font-size: 12px; color: ${cardColor}; font-weight: bold;`;
+                    } else if (isSub) {
+                        eventStyle = `border-left: 4px solid #00cc66; background: rgba(0, 204, 102, 0.08); padding-left: 10px; margin-bottom: 8px; text-align: left;`;
+                        titleStyle = `font-size: 12px; color: #00cc66; font-weight: bold;`;
+                    } else if (isChance) {
+                        eventStyle = `border-left: 4px solid #ff6600; background: rgba(255, 102, 0, 0.08); padding-left: 10px; margin-bottom: 8px; text-align: left;`;
+                        titleStyle = `font-size: 12px; color: #ff6600; font-weight: bold;`;
+                    }
+
+                    const isNumericMin = c.minute && !isNaN(parseInt(c.minute));
+                    const minDisplay = isNumericMin ? `${c.minute}'` : (c.minute || '');
+                    const headerText = typeEmoji ? `[${minDisplay}] ${typeEmoji}` : `[${minDisplay}]`;
+                    
+                    return `
+                        <div style="${eventStyle}">
+                            <div style="${titleStyle}">
+                                ${headerText}
+                            </div>
+                            <div style="${textStyle}">
+                                "${formattedRoast}"
+                            </div>
+                            <div style="display: none; font-size: 11px; color: #888;">
+                                Raw Play: ${formattedRaw}
+                            </div>
+                            ${videoLink}
+                        </div>
+                    `;
+                }).join('');
+                
+                timeline.scrollTop = timeline.scrollHeight;
+            } catch (err) {
+                console.log("Error checking comments timeline:", err);
+            }
+        }
+
+        // Background falling trophy particles
+        function createFallingParticles() {
+            const container = document.getElementById('particles-container');
+            const particleCount = 12;
+            for (let i = 0; i < particleCount; i++) {
+                const p = document.createElement('img');
+                p.src = '../assets/falling_trophy_transparent.png';
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.animationDuration = (Math.random() * 8 + 6) + 's';
+                p.style.animationDelay = (Math.random() * 8) + 's';
+                p.style.width = (Math.random() * 20 + 20) + 'px';
+                container.appendChild(p);
+            }
+        }
+
+        // Initialize Page
+        document.getElementById('team1-header-flag').src = getFlagImgUrl(TEAM1_NAME);
+        document.getElementById('team2-header-flag').src = getFlagImgUrl(TEAM2_NAME);
+
+        renderTacticalLineup("t1-lineup-half", squadsData.team1, true);
+        renderTacticalLineup("t2-lineup-half", squadsData.team2, false);
+
+        createFallingParticles();
+        fetchMatchStatus();
+        fetchLiveComments();
+
+        // Set intervals for live updates
+        setInterval(fetchMatchStatus, 15000);
+        setInterval(fetchLiveComments, 10000);
+    </script>
+</body>
+</html>
