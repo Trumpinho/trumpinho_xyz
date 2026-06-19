@@ -312,7 +312,10 @@
                         <input type="color" value="#4b6f93" onchange="document.getElementById('canvas-1').style.background=this.value;" style="flex: 1; height: 35px; border: 2px solid #fff; cursor: pointer;">
                         <button class="sound-btn" style="flex: 1; margin: 0; font-size: 8px;" onclick="document.getElementById('canvas-1').style.background='transparent';">TRANSPARENT</button>
                     </div>
-                    <button class="sound-btn" onclick="generateAndTweet('canvas-1')" style="background: #e63946; color: #fff; padding: 12px; font-size: 10px; border: 2px solid #fff; box-shadow: 4px 4px 0 #000; font-weight: bold;">DOWNLOAD & TWEET</button>
+                    <div style="display: flex; gap: 10px; width: 100%;">
+                        <button class="sound-btn" onclick="downloadMemeOnly('canvas-1')" style="flex: 1; background: #2a9d8f; color: #fff; padding: 12px; font-size: 10px; border: 2px solid #fff; box-shadow: 4px 4px 0 #000; font-weight: bold; margin: 0;">DOWNLOAD ONLY</button>
+                        <button class="sound-btn" onclick="generateAndTweet('canvas-1')" style="flex: 1; background: #e63946; color: #fff; padding: 12px; font-size: 10px; border: 2px solid #fff; box-shadow: 4px 4px 0 #000; font-weight: bold; margin: 0;">DOWNLOAD & TWEET</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1231,6 +1234,16 @@
                 setTimeout(() => {
                     window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
                 }, 500);
+            });
+        }
+
+        function downloadMemeOnly(canvasId) {
+            const canvasArea = document.getElementById(canvasId);
+            html2canvas(canvasArea, { scale: 2, useCORS: true, backgroundColor: null }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'trumpinho-meme.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
             });
         }
 
