@@ -1079,8 +1079,9 @@
                     if (isMatchEnded) typeEmoji = "🏁 MATCH ENDED";
                     else if (isGoal) typeEmoji = "⚽ GOAL!";
                     else if (isCard) {
-                        if (rawTextUpper.includes('RED') || 
-                            roastUpper.includes('RED') || 
+                        if (evType.includes('RED_CARD') || 
+                            /\bRED\b/.test(rawTextUpper) || 
+                            /\bRED\b/.test(roastUpper) || 
                             rawTextUpper.includes('ČERVEN') || 
                             rawTextUpper.includes('VYLUČ') || 
                             rawTextUpper.includes('VYLOV') || 
